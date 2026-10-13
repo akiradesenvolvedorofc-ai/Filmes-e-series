@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Player</title>
+<title>Overflow</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -23,6 +23,7 @@
     transition: transform .25s ease, object-fit .25s ease;
     transform-origin: center center;
   }
+
   #overlay {
     position: absolute; inset: 0;
     background: rgba(0,0,0,0.78);
@@ -107,25 +108,8 @@
   .menu-share    { top: 60px; right: 62px; min-width: 260px; }
   .menu-scale    { top: 60px; right: 62px; min-width: 220px; }
 
-  .season-row { display: flex; gap: 8px; padding: 8px 16px 6px 16px; }
-  .season-row select { flex: 1; background: #111; color: #fff; border: 1px solid rgba(255,255,255,.15); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
-
-  .share-preview {
-    padding: 8px 16px 12px 16px;
-    font-size: 12px;
-    color: #999;
-    word-break: break-all;
-    line-height: 1.4;
-    max-width: 320px;
-    white-space: normal;
-  }
-  .share-preview code {
-    background: rgba(255,255,255,.06);
-    padding: 2px 5px;
-    border-radius: 4px;
-    color: #4ade80;
-    font-family: ui-monospace, monospace;
-  }
+  .share-preview { padding: 8px 16px 12px 16px; font-size: 12px; color: #999; word-break: break-all; line-height: 1.4; max-width: 320px; white-space: normal; }
+  .share-preview code { background: rgba(255,255,255,.06); padding: 2px 5px; border-radius: 4px; color: #4ade80; font-family: ui-monospace, monospace; }
 
   .seek-feedback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,.55); padding: 10px 18px; border-radius: 10px; font-size: 15px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .2s ease; z-index: 6; }
   .seek-feedback.show { opacity: 1; }
@@ -267,17 +251,10 @@
     <div id="subsList"></div>
     <div class="sep"></div>
     <div class="item" id="uploadSub">📁 Carregar .vtt<input type="file" accept=".vtt,text/vtt" id="subFile" style="display:none"></div>
-    <div class="sep"></div>
-    <div class="menu-title">IA — Gerar automaticamente</div>
-    <div class="item" id="aiGenPt">🤖 Gerar legenda PT</div>
-    <div class="item" id="aiGenEn">🤖 Gerar legenda EN</div>
   </div>
 
   <div class="menu menu-episodes" id="episodesMenu">
-    <div class="menu-title">Temporadas & Episódios</div>
-    <div class="season-row">
-      <select id="selectSeason"></select>
-    </div>
+    <div class="menu-title">Episódios</div>
     <div id="episodeList"></div>
   </div>
 
@@ -303,29 +280,30 @@
   "use strict";
 
   // ============================================================
-  //  🎯 CONFIG — API XTREAM CODES
+  //  🎯 CONFIG — OVERFLOW (links estáticos)
   // ============================================================
-  var XTREAM_CONFIG = {
-    // URL da API que você me passou
-    apiUrl: "https://mgeb.site/player_api.php",
-    username: "Akira_yr",
-    password: "b1b6c992cd09223b",
-    // ID da série "Overflow" na sua lista IPTV.
-    // Para descobrir, use o endpoint get_series ou
-    // você pode pegar no painel da sua IPTV.
-    seriesId: "95897", // <-- PREENCHA COM O ID DA SÉRIE OVERFLOW
-    // Formato da URL de streaming. O Xtream geralmente usa .m3u8 para séries.
-    streamExtension: "m3u8"
-  };
-
-  // Token do TMDB (usado para puxar pôster, sinopse, etc.)
   var TMDB_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2ZWUwZDBjYTNlNGE3MzRhMzZmMTVkODgwMmE1Y2M0YiIsIm5iZiI6MTc5MTIzODAxOS4xMDMwMDAyLCJzdWIiOiI2YWM0MWY4M2ZhMGZiZGI1NGY5NWM0NDEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.djnlUPS5uJBMtKK_IIZC16YEzAQMDqLGcYj7P6VMdCM";
 
-  // Configuração da IA (opcional)
-  var AI_CONFIG = {
-    apiKey: "AQ.Ab8RN6JZj2_oWFIOtM8acSozIfaRXbSiWNRqsrOgtbASIkfFWg",
-    endpoint: "",
-    model: ""
+  var CONTENT = {
+    type: "tv",
+    tmdbId: "96677",           // Overflow (2020)
+    tmdbLang: "pt-BR",
+
+    episodes: [
+      { number: 1, label: "Episódio 1", url: "https://stream-limit-vid.321moviesfree.com/c0ff95aa9d1071f0817b87c6371c0102/34960e2de9c63f3ef90e9ed32e60b707-sd.m3u8?hdnts=exp=1791891821_acl=/c0ff95aa9d1071f0817b87c6371c0102/*_hmac=4f76a6fe132bf42e6096c79760b56a2894550e8e26670e3e6a5b47bef8a33753" },
+      { number: 2, label: "Episódio 2", url: "https://stream-limit-vid.321moviesfree.com/206c93ae9d1071f090a387c7361c0102/2c70c0d0f25fb9a0a50bc81cb222520b-sd.m3u8?hdnts=exp=1791875229_acl=/206c93ae9d1071f090a387c7361c0102/*_hmac=d88d8fdd4a2bc04fca6b767e45b98056e14dec7aeb4b8a0cd5949f895eeeb097" },
+      { number: 3, label: "Episódio 3", url: "https://stream-limit-vid.321moviesfree.com/e0f59db99d1071f0810487c7371d0102/e4480a1bc154e50ba7911fca5229bb82-sd.m3u8?hdnts=exp=1791872749_acl=/e0f59db99d1071f0810487c7371d0102/*_hmac=e041bf47d66b73240b9f3c0ce83671c62a5737b22843fc288965c0dc84ec9584" },
+      { number: 4, label: "Episódio 4", url: "https://stream-limit-vid.321moviesfree.com/10cceabb9d1071f0b32f4177d1c10102/cf47c0142cc43918711df6dbb202aa94-sd.m3u8?hdnts=exp=1791875614_acl=/10cceabb9d1071f0b32f4177d1c10102/*_hmac=9618d08d5a7c73949d538f776d1b69762940fd113f9a5867357c95468e55ea3d" },
+      { number: 5, label: "Episódio 5", url: "https://stream-limit-vid.321moviesfree.com/6066b3c29d1071f0bd204177d0d10102/76d5b0a16045589db805968bbbe1e644-sd.m3u8?hdnts=exp=1791875970_acl=/6066b3c29d1071f0bd204177d0d10102/*_hmac=8c5f810992853cb13ec154266c7f2b8f77f944fc0fd6c3ba3743314ce9934854" },
+      { number: 6, label: "Episódio 6", url: "https://stream-limit-vid.321moviesfree.com/3049c2c49d1071f0887e5114c0db0102/4579665be560be6417467b80ddc04d38-sd.m3u8?hdnts=exp=1791877777_acl=/3049c2c49d1071f0887e5114c0db0102/*_hmac=a3efe8646522e81e010d13d1b1e75e0d518a5dbd39844ff43a9b4295b14963b2" },
+      { number: 7, label: "Episódio 7", url: "https://stream-limit-vid.321moviesfree.com/b0e02dc99d1071f09b735114c1ca0102/57f326511edeb18fd0e9feebfc1642e3-sd.m3u8?hdnts=exp=1791887654_acl=/b0e02dc99d1071f09b735114c1ca0102/*_hmac=9129b800c326fa1cf65c83bccf5ce5086433f84f421fbe9fdbf2b8da4da9a69c" },
+      { number: 8, label: "Episódio 8", url: "https://stream-limit-vid.321moviesfree.com/30388cca9d1071f0ad455014c1da0102/8b77979d2bb8770868a9f5d8fea54efe-sd.m3u8?hdnts=exp=1791887854_acl=/30388cca9d1071f0ad455014c1da0102/*_hmac=0ff8d184338bd2bddb21660bc4f2ce3392c808338727653ca0d96c602cd68b1f" }
+    ],
+
+    subtitles: {
+      // pt: "https://site.com/overflow.pt.vtt",
+      // en: "https://site.com/overflow.en.vtt"
+    }
   };
   // ============================================================
 
@@ -340,16 +318,13 @@
   var settingsMenu = $("settingsMenu"), qualityMenu = $("qualityMenu"), subsMenu = $("subsMenu");
   var episodesMenu = $("episodesMenu"), shareMenu = $("shareMenu"), scaleMenu = $("scaleMenu");
   var qualityList = $("qualityList"), subsList = $("subsList"), episodeList = $("episodeList");
-  var selectSeason = $("selectSeason"), sharePreview = $("sharePreview");
+  var sharePreview = $("sharePreview");
   var progressWrap = $("progressWrap"), progressFill = $("progressFill"), progressBuf = $("progressBuffer");
   var progressHand = $("progressHandle"), timeLabel = $("timeLabel");
   var seekFb = $("seekFeedback"), toastEl = $("toast");
 
-  // Estado
-  var state = { seasonIndex: 0, episodeIndex: 0 };
-  var seriesData = null; // Guarda a resposta de get_series_info
+  var state = { episodeIndex: 0 };
 
-  // ============ UTIL ============
   function renderIcons() { if (window.lucide && typeof lucide.createIcons === "function") lucide.createIcons(); }
   function showToast(msg, dur) {
     toastEl.textContent = msg;
@@ -365,181 +340,12 @@
   function closeAllMenus() { allMenus.forEach(function(m){ if (m) m.classList.remove("show"); }); }
   function isMenuOpen() { return allMenus.some(function(m){ return m && m.classList.contains("show"); }); }
 
-  // ============ API XTREAM ============
-  async function fetchApi(action, params) {
-    var url = XTREAM_CONFIG.apiUrl + "?username=" + encodeURIComponent(XTREAM_CONFIG.username) +
-              "&password=" + encodeURIComponent(XTREAM_CONFIG.password);
-    if (action) url += "&action=" + action;
-    if (params) {
-      for (var k in params) {
-        if (params.hasOwnProperty(k)) url += "&" + k + "=" + encodeURIComponent(params[k]);
-      }
-    }
-    var res = await fetch(url);
-    if (!res.ok) throw new Error("API " + res.status);
-    return res.json();
-  }
+  function currentEpisode() { return CONTENT.episodes[state.episodeIndex]; }
 
-  function buildStreamUrl(episodeId) {
-    // Formato: https://mgeb.site/series/USERNAME/PASSWORD/EPISODE_ID.m3u8
-    return "https://mgeb.site/series/" +
-           encodeURIComponent(XTREAM_CONFIG.username) + "/" +
-           encodeURIComponent(XTREAM_CONFIG.password) + "/" +
-           episodeId + "." + XTREAM_CONFIG.streamExtension;
-  }
-
-  // ============ CARREGAR SÉRIE ============
-  async function loadSeries() {
-    if (!XTREAM_CONFIG.seriesId) {
-      showToast("⚠ ID da série não configurado no código", 4000);
-      $("titleEl").textContent = "ID da série não configurado";
-      return;
-    }
-    try {
-      var data = await fetchApi("get_series_info", { series_id: XTREAM_CONFIG.seriesId });
-      seriesData = data;
-
-      // O TMDB ID pode estar em data.info.tmdb_id
-      var tmdbId = (data.info && data.info.tmdb_id) ? String(data.info.tmdb_id) : "";
-
-      // Constrói a estrutura de temporadas/episódios
-      var seasons = [];
-      var epsMap = data.episodes || {};
-      // As chaves são números de temporada ("1", "2", ...)
-      Object.keys(epsMap).sort(function(a,b){ return Number(a) - Number(b); }).forEach(function(seasonNum) {
-        var eps = epsMap[seasonNum];
-        if (!eps || !eps.length) return;
-        seasons.push({
-          number: Number(seasonNum),
-          label: "Temporada " + seasonNum,
-          episodes: eps.map(function(ep) {
-            return {
-              id: ep.id,
-              number: Number(ep.episode_num) || 0,
-              label: (ep.title && ep.title.trim()) ? ep.title : ("Episódio " + ep.episode_num)
-            };
-          })
-        });
-      });
-
-      if (!seasons.length) {
-        showToast("Nenhum episódio encontrado nesta série", 4000);
-        return;
-      }
-
-      // Atualiza o CONTENT com as temporadas reais
-      CONTENT.seasons = seasons;
-
-      // Preenche o seletor de temporadas
-      buildSeasonSelector();
-      buildEpisodeList();
-
-      // Carrega o TMDB (se tiver ID)
-      if (tmdbId) loadTMDB(tmdbId);
-
-      // Carrega o primeiro episódio (ainda sem dar play)
-      var firstEp = seasons[0].episodes[0];
-      if (firstEp) {
-        var url = buildStreamUrl(firstEp.id);
-        loadVideoUrl(url, false);
-      }
-    } catch (err) {
-      console.error("Erro ao carregar série:", err);
-      showToast("❌ Erro ao carregar dados da série", 4000);
-      $("titleEl").textContent = "Erro ao carregar série";
-    }
-  }
-
-  // ============ TMDB ============
-  async function loadTMDB(tmdbId) {
-    var headers = { Authorization: "Bearer " + TMDB_TOKEN, accept: "application/json" };
-    try {
-      var res = await fetch("https://api.themoviedb.org/3/tv/" + tmdbId + "?language=pt-BR", { headers: headers });
-      if (!res.ok) throw new Error("TMDB " + res.status);
-      var d = await res.json();
-      $("titleEl").textContent = d.name || d.original_name || "";
-      $("overviewEl").textContent = d.overview || "Sem sinopse disponível.";
-      if (d.poster_path) {
-        var posterUrl = "https://image.tmdb.org/t/p/w500" + d.poster_path;
-        $("posterImg").src = posterUrl;
-        if (d.backdrop_path) video.poster = "https://image.tmdb.org/t/p/original" + d.backdrop_path;
-        else video.poster = posterUrl;
-      }
-      if (typeof d.vote_average === "number" && d.vote_average > 0) {
-        var bR = $("badgeRating"); bR.textContent = "★ " + d.vote_average.toFixed(1); bR.style.display = "";
-      }
-      if (d.first_air_date) { var bY = $("badgeYear"); bY.textContent = d.first_air_date.slice(0, 4); bY.style.display = ""; }
-      if (d.genres && d.genres.length) $("genresEl").textContent = d.genres.map(function(g){return g.name;}).join(", ");
-      try {
-        var res2 = await fetch("https://api.themoviedb.org/3/tv/" + tmdbId + "/content_ratings", { headers: headers });
-        var d2 = await res2.json();
-        var r = (d2.results || []).find(function(x){ return x.iso_3166_1 === "BR"; });
-        if (r && r.rating) { var bA = $("badgeAge"); bA.textContent = r.rating; bA.style.display = ""; }
-      } catch(e) {}
-      document.title = d.name || "Player";
-    } catch (err) { console.warn("TMDB:", err); }
-  }
-
-  // ============ LISTA / SELETOR ============
-  function buildSeasonSelector() {
-    selectSeason.innerHTML = "";
-    CONTENT.seasons.forEach(function(s, i) {
-      var opt = document.createElement("option");
-      opt.value = i;
-      opt.textContent = s.label;
-      selectSeason.appendChild(opt);
-    });
-    selectSeason.value = state.seasonIndex;
-  }
-  function buildEpisodeList() {
-    episodeList.innerHTML = "";
-    var season = CONTENT.seasons[state.seasonIndex];
-    if (!season) return;
-    season.episodes.forEach(function(ep, i) {
-      var item = document.createElement("div");
-      item.className = "item" + (i === state.episodeIndex ? " active" : "");
-      item.dataset.epIndex = i;
-      item.textContent = ep.label;
-      item.addEventListener("click", function () {
-        loadEpisode(state.seasonIndex, i, true);
-        closeAllMenus();
-      });
-      episodeList.appendChild(item);
-    });
-  }
-  function markActiveEpisode() {
-    episodeList.querySelectorAll(".item").forEach(function(el){
-      el.classList.remove("active");
-      if (parseInt(el.dataset.epIndex, 10) === state.episodeIndex) el.classList.add("active");
-    });
-  }
-  selectSeason.addEventListener("change", function() {
-    state.seasonIndex = parseInt(this.value, 10);
-    state.episodeIndex = 0;
-    buildEpisodeList();
-    updateSharePreview();
-  });
-
-  // ============ CARREGAR EPISÓDIO ============
-  function loadEpisode(sIdx, eIdx, autoplay) {
-    var season = CONTENT.seasons[sIdx];
-    if (!season) return;
-    var ep = season.episodes[eIdx];
-    if (!ep) return;
-    state.seasonIndex = sIdx;
-    state.episodeIndex = eIdx;
-    updateUrlHash();
-    updateSharePreview();
-    showToast("Carregando " + season.label + " · " + ep.label + "...");
-    var url = buildStreamUrl(ep.id);
-    loadVideoUrl(url, autoplay !== false);
-    markActiveEpisode();
-  }
-
-  // ============ HLS / MP4 ============
+  // HLS / MP4
   var hls = null, hlsLevels = [], currentLevelIndex = -1;
   function loadVideoUrl(url, autoplayAfter) {
-    if (!url) { showToast("⚠ URL do episódio vazia."); return; }
+    if (!url) { showToast("⚠ Episódio sem link."); return; }
     if (hls) { try { hls.destroy(); } catch(e){} hls = null; hlsLevels = []; }
     video.removeAttribute("src");
     video.load();
@@ -557,39 +363,191 @@
     if (autoplayAfter) video.play().catch(function(){});
   }
 
-  // ============ URL HASH / SHARE ============
+  function loadEpisode(index, autoplay) {
+    if (index < 0 || index >= CONTENT.episodes.length) return;
+    state.episodeIndex = index;
+    var ep = CONTENT.episodes[index];
+    updateUrlHash();
+    updateSharePreview();
+    showToast("Carregando " + ep.label + "...");
+    loadVideoUrl(ep.url, autoplay !== false);
+    markActiveEpisode();
+  }
+
   function updateUrlHash() {
-    var s = CONTENT.seasons[state.seasonIndex].number;
-    var e = CONTENT.seasons[state.seasonIndex].episodes[state.episodeIndex].number;
-    if (history.replaceState) history.replaceState(null, "", "#t" + s + "e" + e);
+    var e = CONTENT.episodes[state.episodeIndex].number;
+    if (history.replaceState) history.replaceState(null, "", "#e" + e);
   }
   function readUrlHash() {
-    var m = window.location.hash.match(/t(\d+)e(\d+)/i);
+    var m = window.location.hash.match(/e(\d+)/i);
     if (!m) return null;
-    var sNum = parseInt(m[1], 10), eNum = parseInt(m[2], 10);
-    var sIdx = CONTENT.seasons.findIndex(function(s){ return s.number === sNum; });
-    if (sIdx === -1) return null;
-    var eIdx = CONTENT.seasons[sIdx].episodes.findIndex(function(e){ return e.number === eNum; });
-    if (eIdx === -1) return null;
-    return { seasonIndex: sIdx, episodeIndex: eIdx };
+    var eNum = parseInt(m[1], 10);
+    var idx = CONTENT.episodes.findIndex(function(e){ return e.number === eNum; });
+    return idx === -1 ? null : idx;
   }
+
+  function buildEpisodeList() {
+    episodeList.innerHTML = "";
+    CONTENT.episodes.forEach(function(ep, i) {
+      var item = document.createElement("div");
+      item.className = "item" + (i === state.episodeIndex ? " active" : "");
+      item.dataset.epIndex = i;
+      item.textContent = ep.label;
+      item.addEventListener("click", function () {
+        loadEpisode(i, true);
+        closeAllMenus();
+      });
+      episodeList.appendChild(item);
+    });
+  }
+  function markActiveEpisode() {
+    episodeList.querySelectorAll(".item").forEach(function(el){
+      el.classList.remove("active");
+      if (parseInt(el.dataset.epIndex, 10) === state.episodeIndex) el.classList.add("active");
+    });
+  }
+
+  video.addEventListener("ended", function () {
+    if (state.episodeIndex < CONTENT.episodes.length - 1) {
+      showToast("Próximo episódio em 3s...", 2500);
+      setTimeout(function(){ loadEpisode(state.episodeIndex + 1, true); }, 3000);
+    } else {
+      showToast("Fim da série!", 3000);
+    }
+    syncPlayIcons();
+    showControls();
+  });
+
+  function bootstrap() {
+    var fromHash = readUrlHash();
+    if (fromHash !== null) state.episodeIndex = fromHash;
+    buildEpisodeList();
+    loadTMDB();
+    var ep = currentEpisode();
+    loadVideoUrl(ep ? ep.url : "", false);
+    updateSharePreview();
+  }
+
+  // TMDB
+  async function loadTMDB() {
+    var headers = { Authorization: "Bearer " + TMDB_TOKEN, accept: "application/json" };
+    try {
+      var res = await fetch("https://api.themoviedb.org/3/tv/" + CONTENT.tmdbId + "?language=" + CONTENT.tmdbLang, { headers: headers });
+      if (!res.ok) throw new Error("TMDB " + res.status);
+      var d = await res.json();
+      $("titleEl").textContent = d.name || d.original_name || "Overflow";
+      $("overviewEl").textContent = d.overview || "Sem sinopse disponível.";
+      if (d.poster_path) {
+        var posterUrl = "https://image.tmdb.org/t/p/w500" + d.poster_path;
+        $("posterImg").src = posterUrl;
+        if (d.backdrop_path) video.poster = "https://image.tmdb.org/t/p/original" + d.backdrop_path;
+        else video.poster = posterUrl;
+      }
+      if (typeof d.vote_average === "number" && d.vote_average > 0) {
+        var bR = $("badgeRating"); bR.textContent = "★ " + d.vote_average.toFixed(1); bR.style.display = "";
+      }
+      if (d.first_air_date) { var bY = $("badgeYear"); bY.textContent = d.first_air_date.slice(0, 4); bY.style.display = ""; }
+      if (d.genres && d.genres.length) $("genresEl").textContent = d.genres.map(function(g){return g.name;}).join(", ");
+      try {
+        var res2 = await fetch("https://api.themoviedb.org/3/tv/" + CONTENT.tmdbId + "/content_ratings", { headers: headers });
+        var d2 = await res2.json();
+        var r = (d2.results || []).find(function(x){ return x.iso_3166_1 === "BR"; });
+        if (r && r.rating) { var bA = $("badgeAge"); bA.textContent = r.rating; bA.style.display = ""; }
+      } catch(e) {}
+      document.title = d.name || "Overflow";
+    } catch (err) { console.warn("TMDB:", err); }
+  }
+
+  // Autoplay / play-pause
+  var userInteracted = false;
+  tapToPlay.addEventListener("click", function () {
+    userInteracted = true; tapToPlay.classList.remove("show");
+    video.muted = false; video.play().catch(function(){});
+  });
+  video.addEventListener("loadedmetadata", function () {
+    var p = video.play();
+    if (p && p.catch) p.catch(function () { if (!userInteracted) tapToPlay.classList.add("show"); });
+  });
+  function togglePlay() { if (video.paused) video.play().catch(function(){}); else video.pause(); }
+  function syncPlayIcons() {
+    if (video.paused) { iconPlayWrap.classList.remove("hidden"); iconPauseWrap.classList.add("hidden"); }
+    else { iconPlayWrap.classList.add("hidden"); iconPauseWrap.classList.remove("hidden"); }
+  }
+  btnPlay.addEventListener("click", function (e) { e.stopPropagation(); togglePlay(); });
+  video.addEventListener("play", syncPlayIcons);
+  video.addEventListener("pause", syncPlayIcons);
+  syncPlayIcons();
+
+  video.addEventListener("pause", function () { if (!userInteracted) return; if (tapToPlay.classList.contains("show")) return; overlay.classList.add("show"); });
+  video.addEventListener("play", function () { overlay.classList.remove("show"); });
+  overlay.addEventListener("click", function () { overlay.classList.remove("show"); video.play().catch(function(){}); });
+
+  // Volume
+  function updateVolUI() {
+    if (video.muted || video.volume === 0) { iconVolWrap.classList.add("hidden"); iconMutedWrap.classList.remove("hidden"); }
+    else { iconVolWrap.classList.remove("hidden"); iconMutedWrap.classList.add("hidden"); }
+    volSlider.value = video.muted ? 0 : video.volume;
+  }
+  btnMute.addEventListener("click", function (e) { e.stopPropagation(); video.muted = !video.muted; if (!video.muted && video.volume === 0) video.volume = 0.5; updateVolUI(); });
+  volSlider.addEventListener("input", function (e) { e.stopPropagation(); video.volume = parseFloat(this.value); video.muted = video.volume === 0; updateVolUI(); });
+  video.addEventListener("volumechange", updateVolUI);
+  updateVolUI();
+
+  // Skip 10s
+  function showSeekFeedback(txt) { seekFb.textContent = txt; seekFb.classList.add("show"); clearTimeout(seekFb._t); seekFb._t = setTimeout(function () { seekFb.classList.remove("show"); }, 500); }
+  btnBack.addEventListener("click", function (e) { e.stopPropagation(); video.currentTime = Math.max(0, video.currentTime - 10); showSeekFeedback("-10s"); });
+  btnFwd.addEventListener("click", function (e) { e.stopPropagation(); video.currentTime = Math.min(video.duration || 1e9, video.currentTime + 10); showSeekFeedback("+10s"); });
+
+  // Progresso
+  function fmt(s) { if (!isFinite(s) || s < 0) s = 0; var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60); if (h > 0) return h + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0"); return m + ":" + String(sec).padStart(2, "0"); }
+  function updateProgress() { var d = video.duration || 0, c = video.currentTime || 0; var pct = d ? (c / d) * 100 : 0; progressFill.style.width = pct + "%"; progressHand.style.left = pct + "%"; timeLabel.textContent = fmt(c) + " / " + fmt(d); }
+  video.addEventListener("timeupdate", updateProgress); video.addEventListener("loadedmetadata", updateProgress); video.addEventListener("durationchange", updateProgress);
+  video.addEventListener("progress", function () { try { if (video.buffered.length) { var end = video.buffered.end(video.buffered.length - 1); var d = video.duration || 1; progressBuf.style.width = (end / d) * 100 + "%"; } } catch (e) {} });
+
+  var seeking = false;
+  function seekFromEvent(ev) { var rect = progressWrap.getBoundingClientRect(); var x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left; var pct = Math.max(0, Math.min(1, x / rect.width)); if (video.duration) video.currentTime = pct * video.duration; }
+  progressWrap.addEventListener("mousedown", function (e) { seeking = true; seekFromEvent(e); });
+  progressWrap.addEventListener("touchstart", function (e) { seeking = true; seekFromEvent(e); }, { passive: true });
+  document.addEventListener("mousemove", function (e) { if (seeking) seekFromEvent(e); });
+  document.addEventListener("touchmove", function (e) { if (seeking) seekFromEvent(e); }, { passive: true });
+  document.addEventListener("mouseup", function () { seeking = false; });
+  document.addEventListener("touchend", function () { seeking = false; });
+
+  // Fullscreen
+  async function enterFullscreen() { var el = player; try { if (el.requestFullscreen) await el.requestFullscreen(); else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen(); else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen(); } catch (e) {} try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape"); } catch(e){} }
+  async function exitFullscreen() { try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e){} try { if (document.exitFullscreen) await document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch (e) {} }
+  function toggleFullscreen() { var isFs = document.fullscreenElement || document.webkitFullscreenElement; if (!isFs) enterFullscreen(); else exitFullscreen(); }
+  btnFs.addEventListener("click", function (e) { e.stopPropagation(); toggleFullscreen(); });
+  function syncFsIcons() { var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement); if (isFs) { iconFsOnWrap.classList.add("hidden"); iconFsOffWrap.classList.remove("hidden"); } else { iconFsOnWrap.classList.remove("hidden"); iconFsOffWrap.classList.add("hidden"); } }
+  document.addEventListener("fullscreenchange", syncFsIcons); document.addEventListener("webkitfullscreenchange", syncFsIcons);
+
+  // PiP
+  if (document.pictureInPictureEnabled) { btnPiP.addEventListener("click", function (e) { e.stopPropagation(); if (document.pictureInPictureElement) document.exitPictureInPicture(); else video.requestPictureInPicture().catch(function(){}); }); } else btnPiP.style.display = "none";
+
+  // Cast
+  async function tryCast() {
+    if (video.remote && typeof video.remote.prompt === "function") { try { await video.remote.prompt(); showToast("Transmitindo para TV..."); return; } catch (e) {} }
+    if (typeof video.webkitShowPlaybackTargetPicker === "function") { try { video.webkitShowPlaybackTargetPicker(); showToast("Escolha um dispositivo AirPlay"); return; } catch (e) {} }
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) { try { await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }); showToast("Escolha a tela/aba"); return; } catch (e) { showToast("Não foi possível iniciar"); return; } }
+    showToast("Navegador não suporta transmissão");
+  }
+  btnCast.addEventListener("click", function (e) { e.stopPropagation(); tryCast(); });
+  if (video.remote && typeof video.remote.watchAvailability === "function") { video.remote.watchAvailability(function (available) { btnCast.classList.toggle("casting", !!available); }).catch(function(){}); }
+
+  // Compartilhar
   function buildShareUrl() {
-    var sNum = CONTENT.seasons[state.seasonIndex].number;
-    var eNum = CONTENT.seasons[state.seasonIndex].episodes[state.episodeIndex].number;
-    return window.location.origin + window.location.pathname + "#t" + sNum + "e" + eNum;
+    var e = currentEpisode().number;
+    return window.location.origin + window.location.pathname + "#e" + e;
   }
   function updateSharePreview() {
-    var s = CONTENT.seasons[state.seasonIndex];
-    var e = s.episodes[state.episodeIndex];
-    if (!s || !e) return;
-    sharePreview.innerHTML = "Temporada " + s.number + " · " + e.label + "<br><code>" + buildShareUrl() + "</code>";
+    var e = currentEpisode();
+    if (!e) return;
+    sharePreview.innerHTML = e.label + "<br><code>" + buildShareUrl() + "</code>";
   }
   btnShare.addEventListener("click", function (e) { e.stopPropagation(); updateSharePreview(); openMenu(shareMenu); });
   async function doShare() {
     var url = buildShareUrl();
-    var s = CONTENT.seasons[state.seasonIndex];
-    var e = s.episodes[state.episodeIndex];
-    var title = ($("titleEl").textContent || "Vídeo") + " — " + s.label + " " + e.label;
+    var title = ($("titleEl").textContent || "Vídeo") + " — " + currentEpisode().label;
     if (navigator.share) {
       try { await navigator.share({ title: title, text: "Assista: " + title, url: url }); showToast("Compartilhado!"); return; }
       catch (err) { if (err.name === "AbortError") return; }
@@ -607,7 +565,7 @@
   $("shareWhatsapp").addEventListener("click", function(e){ e.stopPropagation(); window.open("https://wa.me/?text=" + encodeURIComponent(($("titleEl").textContent||"") + " - " + buildShareUrl()), "_blank"); });
   $("shareTelegram").addEventListener("click", function(e){ e.stopPropagation(); window.open("https://t.me/share/url?url=" + encodeURIComponent(buildShareUrl()) + "&text=" + encodeURIComponent($("titleEl").textContent||""), "_blank"); });
 
-  // ============ ESCALA ============
+  // Escala
   function applyScale(mode) {
     video.style.transform = "";
     video.style.objectFit = "contain";
@@ -633,7 +591,7 @@
   });
   $("openScaleMenu").addEventListener("click", function (e) { e.stopPropagation(); openMenu(scaleMenu); });
 
-  // ============ LEGENDAS ============
+  // Legendas
   var subtitleTracks = [], uploadedVttUrl = null;
   function addSubtitleTrack(lang, label, url) {
     var t = document.createElement("track");
@@ -650,6 +608,9 @@
       subsList.appendChild(d);
     });
   }
+  if (CONTENT.subtitles.pt) addSubtitleTrack("pt", "Português", CONTENT.subtitles.pt);
+  if (CONTENT.subtitles.en) addSubtitleTrack("en", "English", CONTENT.subtitles.en);
+  buildSubsList();
   function selectSubtitle(mode) {
     for (var i = 0; i < video.textTracks.length; i++) video.textTracks[i].mode = "disabled";
     if (mode === "off") { showToast("Legendas desativadas"); return; }
@@ -662,8 +623,6 @@
     var item = e.target.closest(".item");
     if (!item) return;
     if (item.id === "uploadSub") { $("subFile").click(); return; }
-    if (item.id === "aiGenPt") { generateSubtitlesWithAI("pt"); return; }
-    if (item.id === "aiGenEn") { generateSubtitlesWithAI("en"); return; }
     subsMenu.querySelectorAll(".item").forEach(function(el){ el.classList.remove("active"); });
     item.classList.add("active");
     if (item.dataset.sub === "off") selectSubtitle("off");
@@ -681,55 +640,7 @@
     showToast("Legenda carregada: " + f.name);
   });
 
-  // ============ IA ============
-  async function generateSubtitlesWithAI(lang) {
-    showToast("🤖 Gerando legenda " + lang.toUpperCase() + "...", 4000);
-    closeAllMenus();
-    if (!AI_CONFIG.endpoint || !AI_CONFIG.apiKey) {
-      console.warn("%c⚠ IA não configurada", "color:#f39c12;font-weight:bold",
-        "\nPreencha AI_CONFIG.endpoint e AI_CONFIG.apiKey.");
-      showToast("⚠ IA não configurada. Veja o console.", 5000);
-      return;
-    }
-    try {
-      var audioBlob = await captureAudioBlob(video, 15);
-      var form = new FormData();
-      form.append("file", audioBlob, "audio.webm");
-      form.append("model", AI_CONFIG.model || "whisper-1");
-      form.append("language", lang === "pt" ? "pt" : "en");
-      form.append("response_format", "vtt");
-      var res = await fetch(AI_CONFIG.endpoint, { method: "POST", headers: { Authorization: "Bearer " + AI_CONFIG.apiKey }, body: form });
-      if (!res.ok) throw new Error("API " + res.status);
-      var vttText = await res.text();
-      var blob = new Blob([vttText], { type: "text/vtt" });
-      var url = URL.createObjectURL(blob);
-      var st = addSubtitleTrack(lang, (lang === "pt" ? "Português" : "English") + " (IA)", url);
-      buildSubsList();
-      st.trackEl.track.mode = "showing";
-      showToast("✅ Legenda " + lang.toUpperCase() + " gerada!");
-    } catch (err) {
-      console.error("Erro IA:", err);
-      showToast("❌ Falha ao gerar legenda.");
-    }
-  }
-  function captureAudioBlob(videoEl, seconds) {
-    return new Promise(function (resolve, reject) {
-      try {
-        var stream = videoEl.captureStream ? videoEl.captureStream() : videoEl.mozCaptureStream();
-        var audioTracks = stream.getAudioTracks();
-        if (!audioTracks.length) return reject(new Error("Sem áudio"));
-        var audioStream = new MediaStream(audioTracks);
-        var chunks = [];
-        var mr = new MediaRecorder(audioStream, { mimeType: "audio/webm" });
-        mr.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
-        mr.onstop = function () { resolve(new Blob(chunks, { type: "audio/webm" })); };
-        mr.start();
-        setTimeout(function () { try { mr.stop(); } catch(e){} }, seconds * 1000);
-      } catch (err) { reject(err); }
-    });
-  }
-
-  // ============ QUALIDADE ============
+  // Qualidade
   function labelForHeight(h) {
     if (!h) return "";
     if (h >= 2000) return "4K (2160p)"; if (h >= 1400) return "2K (1440p)";
@@ -776,7 +687,7 @@
   btnQuality.addEventListener("click", function (e) { e.stopPropagation(); buildQualityMenu(); openMenu(qualityMenu); });
   video.addEventListener("loadedmetadata", function () { setTimeout(buildQualityMenu, 50); });
 
-  // ============ SETTINGS ============
+  // Settings
   btnSettings.addEventListener("click", function (e) { e.stopPropagation(); openMenu(settingsMenu); });
   settingsMenu.addEventListener("click", function (e) {
     e.stopPropagation();
@@ -790,10 +701,8 @@
     if (item.id === "setLoop") { video.loop = !video.loop; item.querySelector(".val").textContent = video.loop ? "Sim" : "Não"; showToast(video.loop ? "Repetir: ON" : "Repetir: OFF"); }
   });
 
-  // ============ EPISÓDIOS ============
   btnEpisodes.addEventListener("click", function (e) { e.stopPropagation(); buildEpisodeList(); openMenu(episodesMenu); });
 
-  // Fechar menus
   document.addEventListener("click", function (e) {
     if (e.target.closest(".menu")) return;
     if (e.target.closest("#btnSettings") || e.target.closest("#btnQuality") || e.target.closest("#btnCC") ||
@@ -801,7 +710,7 @@
     closeAllMenus();
   });
 
-  // ============ MOSTRAR/ESCONDER ============
+  // Mostrar/esconder
   var hideTimer = null;
   function showControls() {
     controls.classList.add("visible");
@@ -817,7 +726,7 @@
   video.addEventListener("pause", function () { showControls(); });
   video.addEventListener("play",  function () { showControls(); });
 
-  // ============ BLOQUEIO LONG-PRESS ============
+  // Bloqueio long-press
   video.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   video.addEventListener("dragstart",   function (e) { e.preventDefault(); });
   var longPressTimer = null;
@@ -826,70 +735,23 @@
   video.addEventListener("touchmove",   function () { clearTimeout(longPressTimer); });
   video.addEventListener("touchcancel", function () { clearTimeout(longPressTimer); });
 
-  // ============ PLAY / PAUSE / VOLUME / SEEK ============
-  var userInteracted = false;
-  tapToPlay.addEventListener("click", function () {
-    userInteracted = true; tapToPlay.classList.remove("show");
-    video.muted = false; video.play().catch(function(){});
+  // Teclado
+  document.addEventListener("keydown", function (e) {
+    if (e.target && e.target.tagName === "INPUT") return;
+    switch (e.key) {
+      case " ": case "k": e.preventDefault(); togglePlay(); break;
+      case "ArrowLeft": video.currentTime -= 10; showSeekFeedback("-10s"); break;
+      case "ArrowRight": video.currentTime += 10; showSeekFeedback("+10s"); break;
+      case "f": toggleFullscreen(); break;
+      case "m": video.muted = !video.muted; updateVolUI(); break;
+      case "c": btnCC.click(); break;
+    }
   });
-  video.addEventListener("loadedmetadata", function () {
-    var p = video.play();
-    if (p && p.catch) p.catch(function () { if (!userInteracted) tapToPlay.classList.add("show"); });
+
+  window.addEventListener("hashchange", function () {
+    var idx = readUrlHash();
+    if (idx !== null) loadEpisode(idx, true);
   });
-  function togglePlay() { if (video.paused) video.play().catch(function(){}); else video.pause(); }
-  function syncPlayIcons() {
-    if (video.paused) { iconPlayWrap.classList.remove("hidden"); iconPauseWrap.classList.add("hidden"); }
-    else { iconPlayWrap.classList.add("hidden"); iconPauseWrap.classList.remove("hidden"); }
-  }
-  btnPlay.addEventListener("click", function (e) { e.stopPropagation(); togglePlay(); });
-  video.addEventListener("play", syncPlayIcons);
-  video.addEventListener("pause", syncPlayIcons);
-  syncPlayIcons();
-  video.addEventListener("pause", function () { if (!userInteracted) return; if (tapToPlay.classList.contains("show")) return; overlay.classList.add("show"); });
-  video.addEventListener("play", function () { overlay.classList.remove("show"); });
-  overlay.addEventListener("click", function () { overlay.classList.remove("show"); video.play().catch(function(){}); });
-  function updateVolUI() {
-    if (video.muted || video.volume === 0) { iconVolWrap.classList.add("hidden"); iconMutedWrap.classList.remove("hidden"); }
-    else { iconVolWrap.classList.remove("hidden"); iconMutedWrap.classList.add("hidden"); }
-    volSlider.value = video.muted ? 0 : video.volume;
-  }
-  btnMute.addEventListener("click", function (e) { e.stopPropagation(); video.muted = !video.muted; if (!video.muted && video.volume === 0) video.volume = 0.5; updateVolUI(); });
-  volSlider.addEventListener("input", function (e) { e.stopPropagation(); video.volume = parseFloat(this.value); video.muted = video.volume === 0; updateVolUI(); });
-  video.addEventListener("volumechange", updateVolUI);
-  updateVolUI();
-  function showSeekFeedback(txt) { seekFb.textContent = txt; seekFb.classList.add("show"); clearTimeout(seekFb._t); seekFb._t = setTimeout(function () { seekFb.classList.remove("show"); }, 500); }
-  btnBack.addEventListener("click", function (e) { e.stopPropagation(); video.currentTime = Math.max(0, video.currentTime - 10); showSeekFeedback("-10s"); });
-  btnFwd.addEventListener("click", function (e) { e.stopPropagation(); video.currentTime = Math.min(video.duration || 1e9, video.currentTime + 10); showSeekFeedback("+10s"); });
-  function fmt(s) { if (!isFinite(s) || s < 0) s = 0; var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60); if (h > 0) return h + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0"); return m + ":" + String(sec).padStart(2, "0"); }
-  function updateProgress() { var d = video.duration || 0, c = video.currentTime || 0; var pct = d ? (c / d) * 100 : 0; progressFill.style.width = pct + "%"; progressHand.style.left = pct + "%"; timeLabel.textContent = fmt(c) + " / " + fmt(d); }
-  video.addEventListener("timeupdate", updateProgress); video.addEventListener("loadedmetadata", updateProgress); video.addEventListener("durationchange", updateProgress);
-  video.addEventListener("progress", function () { try { if (video.buffered.length) { var end = video.buffered.end(video.buffered.length - 1); var d = video.duration || 1; progressBuf.style.width = (end / d) * 100 + "%"; } } catch (e) {} });
-  var seeking = false;
-  function seekFromEvent(ev) { var rect = progressWrap.getBoundingClientRect(); var x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left; var pct = Math.max(0, Math.min(1, x / rect.width)); if (video.duration) video.currentTime = pct * video.duration; }
-  progressWrap.addEventListener("mousedown", function (e) { seeking = true; seekFromEvent(e); });
-  progressWrap.addEventListener("touchstart", function (e) { seeking = true; seekFromEvent(e); }, { passive: true });
-  document.addEventListener("mousemove", function (e) { if (seeking) seekFromEvent(e); });
-  document.addEventListener("touchmove", function (e) { if (seeking) seekFromEvent(e); }, { passive: true });
-  document.addEventListener("mouseup", function () { seeking = false; });
-  document.addEventListener("touchend", function () { seeking = false; });
-  async function enterFullscreen() { var el = player; try { if (el.requestFullscreen) await el.requestFullscreen(); else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen(); else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen(); } catch (e) {} try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape"); } catch(e){} }
-  async function exitFullscreen() { try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e){} try { if (document.exitFullscreen) await document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch (e) {} }
-  function toggleFullscreen() { var isFs = document.fullscreenElement || document.webkitFullscreenElement; if (!isFs) enterFullscreen(); else exitFullscreen(); }
-  btnFs.addEventListener("click", function (e) { e.stopPropagation(); toggleFullscreen(); });
-  function syncFsIcons() { var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement); if (isFs) { iconFsOnWrap.classList.add("hidden"); iconFsOffWrap.classList.remove("hidden"); } else { iconFsOnWrap.classList.remove("hidden"); iconFsOffWrap.classList.add("hidden"); } }
-  document.addEventListener("fullscreenchange", syncFsIcons); document.addEventListener("webkitfullscreenchange", syncFsIcons);
-  if (document.pictureInPictureEnabled) { btnPiP.addEventListener("click", function (e) { e.stopPropagation(); if (document.pictureInPictureElement) document.exitPictureInPicture(); else video.requestPictureInPicture().catch(function(){}); }); } else btnPiP.style.display = "none";
-  async function tryCast() { if (video.remote && typeof video.remote.prompt === "function") { try { await video.remote.prompt(); showToast("Transmitindo para TV..."); return; } catch (e) {} } if (typeof video.webkitShowPlaybackTargetPicker === "function") { try { video.webkitShowPlaybackTargetPicker(); showToast("Escolha um dispositivo AirPlay"); return; } catch (e) {} } if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) { try { await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }); showToast("Escolha a tela/aba"); return; } catch (e) { showToast("Não foi possível iniciar a transmissão"); return; } } showToast("Este navegador não suporta transmissão"); }
-  btnCast.addEventListener("click", function (e) { e.stopPropagation(); tryCast(); });
-  if (video.remote && typeof video.remote.watchAvailability === "function") { video.remote.watchAvailability(function (available) { btnCast.classList.toggle("casting", !!available); }).catch(function(){}); }
-
-  // ============ HASH ============
-  window.addEventListener("hashchange", function () { var h = readUrlHash(); if (h) loadEpisode(h.seasonIndex, h.episodeIndex, true); });
-
-  // ============ BOOTSTRAP ============
-  function bootstrap() {
-    loadSeries(); // Carrega da API Xtream
-  }
 
   renderIcons();
   window.addEventListener("load", renderIcons);
