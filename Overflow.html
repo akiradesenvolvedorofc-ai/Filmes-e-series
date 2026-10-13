@@ -20,6 +20,8 @@
     position: absolute; inset: 0;
     width: 100%; height: 100%;
     background: #000; object-fit: contain;
+    transition: transform .25s ease, object-fit .25s ease;
+    transform-origin: center center;
   }
   #overlay {
     position: absolute; inset: 0;
@@ -42,22 +44,30 @@
   .badge.age { background: #b91c1c; border-color: #b91c1c; color: #fff; }
   .genres { font-size: 13.5px; font-weight: 700; color: #cfcfcf; margin-bottom: 12px; }
   .overview { font-size: 14px; line-height: 1.55; color: #b8b8b8; max-height: 26vh; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; }
+
   #tapToPlay { position: absolute; inset: 0; background: rgba(0,0,0,.55); display: none; align-items: center; justify-content: center; z-index: 20; cursor: pointer; }
   #tapToPlay.show { display: flex; }
   #tapToPlay .btn { background: #e53935; border-radius: 50%; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 12px rgba(229,57,53,.25), 0 0 60px rgba(229,57,53,.5); animation: pulse 1.6s infinite; }
   #tapToPlay .btn svg { width: 40px; height: 40px; }
   #tapToPlay .label { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); font-size: 14px; font-weight: 700; color: #fff; letter-spacing: .5px; text-align: center; }
   @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
   #controls { position: absolute; inset: 0; z-index: 3; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
   #controls.visible { opacity: 1; }
-  #controls.visible .top-bar, #controls.visible .center-controls, #controls.visible .bottom-bar, #controls.visible .menu { pointer-events: auto; }
+  #controls.visible .top-bar,
+  #controls.visible .center-controls,
+  #controls.visible .bottom-bar,
+  #controls.visible .menu { pointer-events: auto; }
+
   .top-bar { position: absolute; top: 0; right: 0; padding: 14px 18px; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
   .icon-btn { background: transparent; border: 0; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: background .15s; padding: 0; }
   .icon-btn:hover { background: rgba(255,255,255,.12); }
   .icon-btn svg { width: 22px; height: 22px; stroke-width: 2; }
   .icon-btn.gear svg { width: 26px; height: 26px; }
+  .icon-btn.casting { color: #4ade80; }
   .icon-wrap { display: inline-flex; align-items: center; justify-content: center; }
   .icon-wrap.hidden { display: none !important; }
+
   .center-controls { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 55px; }
   .circle-btn { position: relative; width: 60px; height: 60px; border-radius: 50%; background: rgba(60,45,30,0.45); border: 0; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; padding: 0; transition: background .15s, transform .15s; }
   .circle-btn:hover { background: rgba(80,60,40,0.7); transform: scale(1.06); }
@@ -66,17 +76,20 @@
   .circle-btn.big svg { width: 30px; height: 30px; stroke-width: 2.5; }
   .circle-btn .num { position: absolute; bottom: 9px; font-size: 9px; font-weight: 800; letter-spacing: -0.3px; }
   .circle-btn.big .num { bottom: 11px; font-size: 10px; }
+
   .bottom-bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 18px 14px 18px; background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 100%); }
   .bottom-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; padding: 0 2px; margin-bottom: 6px; }
   .time { color: #fff; letter-spacing: .3px; font-variant-numeric: tabular-nums; }
   .right-controls { display: flex; align-items: center; gap: 2px; }
   .right-controls .icon-btn { width: 38px; height: 38px; }
   .right-controls .icon-btn svg { width: 22px; height: 22px; }
+
   .progress-wrap { position: relative; height: 18px; display: flex; align-items: center; cursor: pointer; }
   .progress-bg { position: absolute; left: 0; right: 0; top: 50%; height: 4px; margin-top: -2px; background: rgba(255,255,255,.25); border-radius: 3px; overflow: hidden; }
   .progress-buffer { position: absolute; left:0; top:0; bottom:0; width:0%; background: rgba(255,255,255,.35); }
   .progress-fill { position: absolute; left:0; top:0; bottom:0; width:0%; background:#e53935; border-radius:3px; }
   .progress-handle { position: absolute; width:14px; height:14px; background:#e53935; border-radius:50%; top:50%; transform: translate(-50%, -50%); left:0%; pointer-events:none; box-shadow: 0 0 0 3px rgba(229,57,53,.2); }
+
   .menu { position: absolute; background: rgba(20,20,20,0.97); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 6px 0; min-width: 220px; display: none; z-index: 30; box-shadow: 0 8px 30px rgba(0,0,0,.6); max-height: 65vh; overflow-y: auto; }
   .menu.show { display: block; }
   .menu .item { padding: 11px 16px; font-size: 13.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; white-space: nowrap; }
@@ -89,17 +102,42 @@
   .menu-title { padding: 8px 16px 4px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #666; }
   .menu-settings { top: 60px; right: 18px; }
   .menu-quality  { top: 60px; right: 62px; }
-  .menu-subs     { top: 60px; right: 62px; min-width: 200px; }
+  .menu-subs     { top: 60px; right: 62px; min-width: 240px; }
   .menu-episodes { top: 60px; left: 18px; min-width: 280px; }
+  .menu-share    { top: 60px; right: 62px; min-width: 260px; }
+  .menu-scale    { top: 60px; right: 62px; min-width: 220px; }
+
+  .season-row { display: flex; gap: 8px; padding: 8px 16px 6px 16px; }
+  .season-row select { flex: 1; background: #111; color: #fff; border: 1px solid rgba(255,255,255,.15); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+
+  .share-preview {
+    padding: 8px 16px 12px 16px;
+    font-size: 12px;
+    color: #999;
+    word-break: break-all;
+    line-height: 1.4;
+    max-width: 320px;
+    white-space: normal;
+  }
+  .share-preview code {
+    background: rgba(255,255,255,.06);
+    padding: 2px 5px;
+    border-radius: 4px;
+    color: #4ade80;
+    font-family: ui-monospace, monospace;
+  }
+
   .seek-feedback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,.55); padding: 10px 18px; border-radius: 10px; font-size: 15px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .2s ease; z-index: 6; }
   .seek-feedback.show { opacity: 1; }
   .toast { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.88); padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .25s ease; z-index: 8; max-width: 80%; text-align: center; }
   .toast.show { opacity: 1; }
+
   .vol-wrap { position: relative; display: flex; align-items: center; }
   .vol-slider { -webkit-appearance: none; appearance: none; width: 0; height: 4px; background: rgba(255,255,255,.3); border-radius: 2px; outline: none; transition: width .2s ease; cursor: pointer; margin-left: 4px; }
   .vol-wrap:hover .vol-slider, .vol-slider:focus { width: 80px; }
   .vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #fff; border-radius: 50%; cursor: pointer; }
   .vol-slider::-moz-range-thumb { width: 12px; height: 12px; background: #fff; border: 0; border-radius: 50%; cursor: pointer; }
+
   @media (max-width: 640px) {
     .overlay-content { flex-direction: column; align-items: center; text-align: center; gap: 16px; }
     .poster-wrap { width: 130px; }
@@ -114,6 +152,7 @@
     .right-controls .icon-btn { width: 34px; height: 34px; }
     .right-controls .icon-btn svg { width: 20px; height: 20px; }
   }
+
   #player:fullscreen { width: 100vw; height: 100vh; }
   #player:-webkit-full-screen { width: 100vw; height: 100vh; }
   #player:fullscreen .overlay-content, #player:-webkit-full-screen .overlay-content { flex-direction: row; align-items: flex-start; text-align: left; }
@@ -131,7 +170,7 @@
       <div class="meta">
         <h1 id="titleEl">Carregando...</h1>
         <div class="badges">
-          <span class="badge star" id="badgeRating" style="display:none">? -</span>
+          <span class="badge star" id="badgeRating" style="display:none">★ -</span>
           <span class="badge" id="badgeYear" style="display:none">----</span>
           <span class="badge age" id="badgeAge" style="display:none"></span>
         </div>
@@ -148,8 +187,9 @@
 
   <div id="controls">
     <div class="top-bar">
-      <button class="icon-btn" id="btnEpisodes" title="Epis?dios"><i data-lucide="list-video"></i></button>
-      <button class="icon-btn gear" id="btnSettings" title="Configura??es"><i data-lucide="settings"></i></button>
+      <button class="icon-btn" id="btnEpisodes" title="Episódios"><i data-lucide="list-video"></i></button>
+      <button class="icon-btn" id="btnShare" title="Compartilhar"><i data-lucide="share-2"></i></button>
+      <button class="icon-btn gear" id="btnSettings" title="Configurações"><i data-lucide="settings"></i></button>
     </div>
 
     <div class="center-controls">
@@ -158,7 +198,7 @@
         <span class="icon-wrap" id="iconPlayWrap"><i data-lucide="play"></i></span>
         <span class="icon-wrap hidden" id="iconPauseWrap"><i data-lucide="pause"></i></span>
       </button>
-      <button class="circle-btn" id="btnFwd" title="Avan?ar 10s"><i data-lucide="rotate-cw"></i><span class="num">10</span></button>
+      <button class="circle-btn" id="btnFwd" title="Avançar 10s"><i data-lucide="rotate-cw"></i><span class="num">10</span></button>
     </div>
 
     <div class="bottom-bar">
@@ -167,6 +207,7 @@
         <div class="right-controls">
           <button class="icon-btn" id="btnCC" title="Legendas"><i data-lucide="captions"></i></button>
           <button class="icon-btn" id="btnQuality" title="Qualidade"><i data-lucide="monitor-cog"></i></button>
+          <button class="icon-btn" id="btnCast" title="Transmitir para TV"><i data-lucide="cast"></i></button>
           <button class="icon-btn" id="btnPiP" title="PiP"><i data-lucide="picture-in-picture-2"></i></button>
           <div class="vol-wrap">
             <button class="icon-btn" id="btnMute" title="Mudo">
@@ -200,7 +241,8 @@
     <div class="item" data-speed="1.5">1.5x</div>
     <div class="item" data-speed="2">2x</div>
     <div class="sep"></div>
-    <div class="item" id="setLoop">Repetir <span class="val">N?o</span></div>
+    <div class="item" id="openScaleMenu">Escala da tela <span class="val">Ajustar</span></div>
+    <div class="item" id="setLoop">Repetir <span class="val">Não</span></div>
   </div>
 
   <div class="menu menu-quality" id="qualityMenu">
@@ -208,17 +250,45 @@
     <div id="qualityList"></div>
   </div>
 
+  <div class="menu menu-scale" id="scaleMenu">
+    <div class="menu-title">Escala da tela</div>
+    <div class="item active" data-scale="contain">Ajustar <span class="val">Padrão</span></div>
+    <div class="item" data-scale="cover">Preencher tela</div>
+    <div class="item" data-scale="fill">Esticar</div>
+    <div class="sep"></div>
+    <div class="item" data-scale="zoom110">Zoom 110%</div>
+    <div class="item" data-scale="zoom125">Zoom 125%</div>
+    <div class="item" data-scale="zoom150">Zoom 150%</div>
+  </div>
+
   <div class="menu menu-subs" id="subsMenu">
     <div class="menu-title">Legendas</div>
     <div class="item active" data-sub="off">Desativadas</div>
     <div id="subsList"></div>
     <div class="sep"></div>
-    <div class="item" id="uploadSub">? Carregar .vtt<input type="file" accept=".vtt,text/vtt" id="subFile" style="display:none"></div>
+    <div class="item" id="uploadSub">📁 Carregar .vtt<input type="file" accept=".vtt,text/vtt" id="subFile" style="display:none"></div>
+    <div class="sep"></div>
+    <div class="menu-title">IA — Gerar automaticamente</div>
+    <div class="item" id="aiGenPt">🤖 Gerar legenda PT</div>
+    <div class="item" id="aiGenEn">🤖 Gerar legenda EN</div>
   </div>
 
   <div class="menu menu-episodes" id="episodesMenu">
-    <div class="menu-title">Epis?dios</div>
+    <div class="menu-title">Temporadas & Episódios</div>
+    <div class="season-row">
+      <select id="selectSeason"></select>
+    </div>
     <div id="episodeList"></div>
+  </div>
+
+  <div class="menu menu-share" id="shareMenu">
+    <div class="menu-title">Compartilhar este episódio</div>
+    <div class="share-preview" id="sharePreview"></div>
+    <div class="sep"></div>
+    <div class="item" id="shareNative">📱 Compartilhar</div>
+    <div class="item" id="shareCopy">🔗 Copiar link</div>
+    <div class="item" id="shareWhatsapp">💬 WhatsApp</div>
+    <div class="item" id="shareTelegram">✈️ Telegram</div>
   </div>
 
   <div class="seek-feedback" id="seekFeedback">+10s</div>
@@ -233,31 +303,29 @@
   "use strict";
 
   // ============================================================
-  //  ? CONFIG  COLE AQUI AS 8 URLs COMPLETAS DOS EPIS?DIOS
+  //  🎯 CONFIG — API XTREAM CODES
   // ============================================================
+  var XTREAM_CONFIG = {
+    // URL da API que você me passou
+    apiUrl: "https://mgeb.site/player_api.php",
+    username: "Akira_yr",
+    password: "b1b6c992cd09223b",
+    // ID da série "Overflow" na sua lista IPTV.
+    // Para descobrir, use o endpoint get_series ou
+    // você pode pegar no painel da sua IPTV.
+    seriesId: "95897", // <-- PREENCHA COM O ID DA SÉRIE OVERFLOW
+    // Formato da URL de streaming. O Xtream geralmente usa .m3u8 para séries.
+    streamExtension: "m3u8"
+  };
+
+  // Token do TMDB (usado para puxar pôster, sinopse, etc.)
   var TMDB_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2ZWUwZDBjYTNlNGE3MzRhMzZmMTVkODgwMmE1Y2M0YiIsIm5iZiI6MTc5MTIzODAxOS4xMDMwMDAyLCJzdWIiOiI2YWM0MWY4M2ZhMGZiZGI1NGY5NWM0NDEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.djnlUPS5uJBMtKK_IIZC16YEzAQMDqLGcYj7P6VMdCM";
 
-  var CONTENT = {
-    type: "tv",
-    tmdbId: "95897",
-    tmdbLang: "pt-BR",
-
-    // ? COLE AQUI AS 8 URLs COMPLETAS ?
-    episodes: [
-      { number: 1, label: "Epis?dio 1", url: "https://stream-limit-vid.321moviesfree.com/c0ff95aa9d1071f0817b87c6371c0102/34960e2de9c63f3ef90e9ed32e60b707-sd.m3u8?hdnts=exp=1791891821_acl=/c0ff95aa9d1071f0817b87c6371c0102/*_hmac=4f76a6fe132bf42e6096c79760b56a2894550e8e26670e3e6a5b47bef8a33753" },
-      { number: 2, label: "Epis?dio 2", url: "https://stream-limit-vid.321moviesfree.com/206c93ae9d1071f090a387c7361c0102/2c70c0d0f25fb9a0a50bc81cb222520b-sd.m3u8?hdnts=exp=1791875229_acl=/206c93ae9d1071f090a387c7361c0102/*_hmac=d88d8fdd4a2bc04fca6b767e45b98056e14dec7aeb4b8a0cd5949f895eeeb097" },
-      { number: 3, label: "Epis?dio 3", url: "https://stream-limit-vid.321moviesfree.com/e0f59db99d1071f0810487c7371d0102/e4480a1bc154e50ba7911fca5229bb82-sd.m3u8?hdnts=exp=1791872749_acl=/e0f59db99d1071f0810487c7371d0102/*_hmac=e041bf47d66b73240b9f3c0ce83671c62a5737b22843fc288965c0dc84ec9584" },
-      { number: 4, label: "Epis?dio 4", url: "https://stream-limit-vid.321moviesfree.com/10cceabb9d1071f0b32f4177d1c10102/cf47c0142cc43918711df6dbb202aa94-sd.m3u8?hdnts=exp=1791875614_acl=/10cceabb9d1071f0b32f4177d1c10102/*_hmac=9618d08d5a7c73949d538f776d1b69762940fd113f9a5867357c95468e55ea3d" },
-      { number: 5, label: "Epis?dio 5", url: "https://stream-limit-vid.321moviesfree.com/6066b3c29d1071f0bd204177d0d10102/76d5b0a16045589db805968bbbe1e644-sd.m3u8?hdnts=exp=1791875970_acl=/6066b3c29d1071f0bd204177d0d10102/*_hmac=8c5f810992853cb13ec154266c7f2b8f77f944fc0fd6c3ba3743314ce9934854" },
-      { number: 6, label: "Epis?dio 6", url: "https://stream-limit-vid.321moviesfree.com/3049c2c49d1071f0887e5114c0db0102/4579665be560be6417467b80ddc04d38-sd.m3u8?hdnts=exp=1791877777_acl=/3049c2c49d1071f0887e5114c0db0102/*_hmac=a3efe8646522e81e010d13d1b1e75e0d518a5dbd39844ff43a9b4295b14963b2" },
-      { number: 7, label: "Epis?dio 7", url: "https://stream-limit-vid.321moviesfree.com/b0e02dc99d1071f09b735114c1ca0102/57f326511edeb18fd0e9feebfc1642e3-sd.m3u8?hdnts=exp=1791887654_acl=/b0e02dc99d1071f09b735114c1ca0102/*_hmac=9129b800c326fa1cf65c83bccf5ce5086433f84f421fbe9fdbf2b8da4da9a69c" },
-      { number: 8, label: "Epis?dio 8", url: "https://stream-limit-vid.321moviesfree.com/30388cca9d1071f0ad455014c1da0102/8b77979d2bb8770868a9f5d8fea54efe-sd.m3u8?hdnts=exp=1791887854_acl=/30388cca9d1071f0ad455014c1da0102/*_hmac=0ff8d184338bd2bddb21660bc4f2ce3392c808338727653ca0d96c602cd68b1f" }
-    ],
-
-    subtitles: {
-      // pt: "https://site.com/serie.pt.vtt",
-      // en: "https://site.com/serie.en.vtt"
-    }
+  // Configuração da IA (opcional)
+  var AI_CONFIG = {
+    apiKey: "AQ.Ab8RN6JZj2_oWFIOtM8acSozIfaRXbSiWNRqsrOgtbASIkfFWg",
+    endpoint: "",
+    model: ""
   };
   // ============================================================
 
@@ -266,17 +334,22 @@
   var controls = $("controls"), btnPlay = $("btnPlay"), iconPlayWrap = $("iconPlayWrap"), iconPauseWrap = $("iconPauseWrap");
   var btnBack = $("btnBack"), btnFwd = $("btnFwd"), btnFs = $("btnFs");
   var iconFsOnWrap = $("iconFsOnWrap"), iconFsOffWrap = $("iconFsOffWrap");
-  var btnPiP = $("btnPiP"), btnCC = $("btnCC"), btnQuality = $("btnQuality"), btnSettings = $("btnSettings");
-  var btnEpisodes = $("btnEpisodes"), btnMute = $("btnMute");
+  var btnPiP = $("btnPiP"), btnCast = $("btnCast"), btnCC = $("btnCC"), btnQuality = $("btnQuality");
+  var btnSettings = $("btnSettings"), btnEpisodes = $("btnEpisodes"), btnShare = $("btnShare"), btnMute = $("btnMute");
   var iconVolWrap = $("iconVolWrap"), iconMutedWrap = $("iconMutedWrap"), volSlider = $("volSlider");
-  var settingsMenu = $("settingsMenu"), qualityMenu = $("qualityMenu"), subsMenu = $("subsMenu"), episodesMenu = $("episodesMenu");
+  var settingsMenu = $("settingsMenu"), qualityMenu = $("qualityMenu"), subsMenu = $("subsMenu");
+  var episodesMenu = $("episodesMenu"), shareMenu = $("shareMenu"), scaleMenu = $("scaleMenu");
   var qualityList = $("qualityList"), subsList = $("subsList"), episodeList = $("episodeList");
+  var selectSeason = $("selectSeason"), sharePreview = $("sharePreview");
   var progressWrap = $("progressWrap"), progressFill = $("progressFill"), progressBuf = $("progressBuffer");
   var progressHand = $("progressHandle"), timeLabel = $("timeLabel");
   var seekFb = $("seekFeedback"), toastEl = $("toast");
 
-  var currentEpisodeIndex = 0;
+  // Estado
+  var state = { seasonIndex: 0, episodeIndex: 0 };
+  var seriesData = null; // Guarda a resposta de get_series_info
 
+  // ============ UTIL ============
   function renderIcons() { if (window.lucide && typeof lucide.createIcons === "function") lucide.createIcons(); }
   function showToast(msg, dur) {
     toastEl.textContent = msg;
@@ -284,33 +357,197 @@
     clearTimeout(showToast._t);
     showToast._t = setTimeout(function(){ toastEl.classList.remove("show"); }, dur || 2200);
   }
+  var allMenus = [settingsMenu, qualityMenu, subsMenu, episodesMenu, shareMenu, scaleMenu];
   function openMenu(menu) {
-    [settingsMenu, qualityMenu, subsMenu, episodesMenu].forEach(function(m){ if (m && m !== menu) m.classList.remove("show"); });
+    allMenus.forEach(function(m){ if (m && m !== menu) m.classList.remove("show"); });
     if (menu) menu.classList.toggle("show");
   }
-  function closeAllMenus() {
-    [settingsMenu, qualityMenu, subsMenu, episodesMenu].forEach(function(m){ if (m) m.classList.remove("show"); });
-  }
-  function isMenuOpen() {
-    return [settingsMenu, qualityMenu, subsMenu, episodesMenu].some(function(m){ return m && m.classList.contains("show"); });
+  function closeAllMenus() { allMenus.forEach(function(m){ if (m) m.classList.remove("show"); }); }
+  function isMenuOpen() { return allMenus.some(function(m){ return m && m.classList.contains("show"); }); }
+
+  // ============ API XTREAM ============
+  async function fetchApi(action, params) {
+    var url = XTREAM_CONFIG.apiUrl + "?username=" + encodeURIComponent(XTREAM_CONFIG.username) +
+              "&password=" + encodeURIComponent(XTREAM_CONFIG.password);
+    if (action) url += "&action=" + action;
+    if (params) {
+      for (var k in params) {
+        if (params.hasOwnProperty(k)) url += "&" + k + "=" + encodeURIComponent(params[k]);
+      }
+    }
+    var res = await fetch(url);
+    if (!res.ok) throw new Error("API " + res.status);
+    return res.json();
   }
 
+  function buildStreamUrl(episodeId) {
+    // Formato: https://mgeb.site/series/USERNAME/PASSWORD/EPISODE_ID.m3u8
+    return "https://mgeb.site/series/" +
+           encodeURIComponent(XTREAM_CONFIG.username) + "/" +
+           encodeURIComponent(XTREAM_CONFIG.password) + "/" +
+           episodeId + "." + XTREAM_CONFIG.streamExtension;
+  }
+
+  // ============ CARREGAR SÉRIE ============
+  async function loadSeries() {
+    if (!XTREAM_CONFIG.seriesId) {
+      showToast("⚠ ID da série não configurado no código", 4000);
+      $("titleEl").textContent = "ID da série não configurado";
+      return;
+    }
+    try {
+      var data = await fetchApi("get_series_info", { series_id: XTREAM_CONFIG.seriesId });
+      seriesData = data;
+
+      // O TMDB ID pode estar em data.info.tmdb_id
+      var tmdbId = (data.info && data.info.tmdb_id) ? String(data.info.tmdb_id) : "";
+
+      // Constrói a estrutura de temporadas/episódios
+      var seasons = [];
+      var epsMap = data.episodes || {};
+      // As chaves são números de temporada ("1", "2", ...)
+      Object.keys(epsMap).sort(function(a,b){ return Number(a) - Number(b); }).forEach(function(seasonNum) {
+        var eps = epsMap[seasonNum];
+        if (!eps || !eps.length) return;
+        seasons.push({
+          number: Number(seasonNum),
+          label: "Temporada " + seasonNum,
+          episodes: eps.map(function(ep) {
+            return {
+              id: ep.id,
+              number: Number(ep.episode_num) || 0,
+              label: (ep.title && ep.title.trim()) ? ep.title : ("Episódio " + ep.episode_num)
+            };
+          })
+        });
+      });
+
+      if (!seasons.length) {
+        showToast("Nenhum episódio encontrado nesta série", 4000);
+        return;
+      }
+
+      // Atualiza o CONTENT com as temporadas reais
+      CONTENT.seasons = seasons;
+
+      // Preenche o seletor de temporadas
+      buildSeasonSelector();
+      buildEpisodeList();
+
+      // Carrega o TMDB (se tiver ID)
+      if (tmdbId) loadTMDB(tmdbId);
+
+      // Carrega o primeiro episódio (ainda sem dar play)
+      var firstEp = seasons[0].episodes[0];
+      if (firstEp) {
+        var url = buildStreamUrl(firstEp.id);
+        loadVideoUrl(url, false);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar série:", err);
+      showToast("❌ Erro ao carregar dados da série", 4000);
+      $("titleEl").textContent = "Erro ao carregar série";
+    }
+  }
+
+  // ============ TMDB ============
+  async function loadTMDB(tmdbId) {
+    var headers = { Authorization: "Bearer " + TMDB_TOKEN, accept: "application/json" };
+    try {
+      var res = await fetch("https://api.themoviedb.org/3/tv/" + tmdbId + "?language=pt-BR", { headers: headers });
+      if (!res.ok) throw new Error("TMDB " + res.status);
+      var d = await res.json();
+      $("titleEl").textContent = d.name || d.original_name || "";
+      $("overviewEl").textContent = d.overview || "Sem sinopse disponível.";
+      if (d.poster_path) {
+        var posterUrl = "https://image.tmdb.org/t/p/w500" + d.poster_path;
+        $("posterImg").src = posterUrl;
+        if (d.backdrop_path) video.poster = "https://image.tmdb.org/t/p/original" + d.backdrop_path;
+        else video.poster = posterUrl;
+      }
+      if (typeof d.vote_average === "number" && d.vote_average > 0) {
+        var bR = $("badgeRating"); bR.textContent = "★ " + d.vote_average.toFixed(1); bR.style.display = "";
+      }
+      if (d.first_air_date) { var bY = $("badgeYear"); bY.textContent = d.first_air_date.slice(0, 4); bY.style.display = ""; }
+      if (d.genres && d.genres.length) $("genresEl").textContent = d.genres.map(function(g){return g.name;}).join(", ");
+      try {
+        var res2 = await fetch("https://api.themoviedb.org/3/tv/" + tmdbId + "/content_ratings", { headers: headers });
+        var d2 = await res2.json();
+        var r = (d2.results || []).find(function(x){ return x.iso_3166_1 === "BR"; });
+        if (r && r.rating) { var bA = $("badgeAge"); bA.textContent = r.rating; bA.style.display = ""; }
+      } catch(e) {}
+      document.title = d.name || "Player";
+    } catch (err) { console.warn("TMDB:", err); }
+  }
+
+  // ============ LISTA / SELETOR ============
+  function buildSeasonSelector() {
+    selectSeason.innerHTML = "";
+    CONTENT.seasons.forEach(function(s, i) {
+      var opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = s.label;
+      selectSeason.appendChild(opt);
+    });
+    selectSeason.value = state.seasonIndex;
+  }
+  function buildEpisodeList() {
+    episodeList.innerHTML = "";
+    var season = CONTENT.seasons[state.seasonIndex];
+    if (!season) return;
+    season.episodes.forEach(function(ep, i) {
+      var item = document.createElement("div");
+      item.className = "item" + (i === state.episodeIndex ? " active" : "");
+      item.dataset.epIndex = i;
+      item.textContent = ep.label;
+      item.addEventListener("click", function () {
+        loadEpisode(state.seasonIndex, i, true);
+        closeAllMenus();
+      });
+      episodeList.appendChild(item);
+    });
+  }
+  function markActiveEpisode() {
+    episodeList.querySelectorAll(".item").forEach(function(el){
+      el.classList.remove("active");
+      if (parseInt(el.dataset.epIndex, 10) === state.episodeIndex) el.classList.add("active");
+    });
+  }
+  selectSeason.addEventListener("change", function() {
+    state.seasonIndex = parseInt(this.value, 10);
+    state.episodeIndex = 0;
+    buildEpisodeList();
+    updateSharePreview();
+  });
+
+  // ============ CARREGAR EPISÓDIO ============
+  function loadEpisode(sIdx, eIdx, autoplay) {
+    var season = CONTENT.seasons[sIdx];
+    if (!season) return;
+    var ep = season.episodes[eIdx];
+    if (!ep) return;
+    state.seasonIndex = sIdx;
+    state.episodeIndex = eIdx;
+    updateUrlHash();
+    updateSharePreview();
+    showToast("Carregando " + season.label + " · " + ep.label + "...");
+    var url = buildStreamUrl(ep.id);
+    loadVideoUrl(url, autoplay !== false);
+    markActiveEpisode();
+  }
+
+  // ============ HLS / MP4 ============
   var hls = null, hlsLevels = [], currentLevelIndex = -1;
-
   function loadVideoUrl(url, autoplayAfter) {
-    if (!url) { showToast("Nenhum link configurado para este epis?dio"); return; }
+    if (!url) { showToast("⚠ URL do episódio vazia."); return; }
     if (hls) { try { hls.destroy(); } catch(e){} hls = null; hlsLevels = []; }
     video.removeAttribute("src");
     video.load();
-
     if (url.indexOf(".m3u8") !== -1 && window.Hls && Hls.isSupported()) {
       hls = new Hls({ enableWorker: true, lowLatencyMode: false });
       hls.loadSource(url);
       hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, function (_, d) {
-        hlsLevels = (d.levels || []).slice();
-        buildQualityMenu();
-      });
+      hls.on(Hls.Events.MANIFEST_PARSED, function (_, d) { hlsLevels = (d.levels || []).slice(); buildQualityMenu(); });
       hls.on(Hls.Events.LEVEL_SWITCHED, function (_, d) { currentLevelIndex = d.level; markActiveQuality(); });
       hls.on(Hls.Events.ERROR, function (_, d) { console.warn("HLS:", d); });
     } else {
@@ -320,199 +557,83 @@
     if (autoplayAfter) video.play().catch(function(){});
   }
 
-  function loadEpisode(index, autoplayAfter) {
-    if (index < 0 || index >= CONTENT.episodes.length) return;
-    currentEpisodeIndex = index;
-    var ep = CONTENT.episodes[index];
-    showToast("Carregando " + ep.label + "...");
-    loadVideoUrl(ep.url, autoplayAfter !== false);
-    markActiveEpisode();
+  // ============ URL HASH / SHARE ============
+  function updateUrlHash() {
+    var s = CONTENT.seasons[state.seasonIndex].number;
+    var e = CONTENT.seasons[state.seasonIndex].episodes[state.episodeIndex].number;
+    if (history.replaceState) history.replaceState(null, "", "#t" + s + "e" + e);
   }
-
-  function buildEpisodeList() {
-    episodeList.innerHTML = "";
-    CONTENT.episodes.forEach(function(ep, i) {
-      var item = document.createElement("div");
-      item.className = "item" + (i === currentEpisodeIndex ? " active" : "");
-      item.dataset.epIndex = i;
-      item.textContent = ep.label + (ep.url ? "" : "  ?");
-      item.addEventListener("click", function () {
-        loadEpisode(i, true);
-        closeAllMenus();
-      });
-      episodeList.appendChild(item);
-    });
+  function readUrlHash() {
+    var m = window.location.hash.match(/t(\d+)e(\d+)/i);
+    if (!m) return null;
+    var sNum = parseInt(m[1], 10), eNum = parseInt(m[2], 10);
+    var sIdx = CONTENT.seasons.findIndex(function(s){ return s.number === sNum; });
+    if (sIdx === -1) return null;
+    var eIdx = CONTENT.seasons[sIdx].episodes.findIndex(function(e){ return e.number === eNum; });
+    if (eIdx === -1) return null;
+    return { seasonIndex: sIdx, episodeIndex: eIdx };
   }
-  function markActiveEpisode() {
-    episodeList.querySelectorAll(".item").forEach(function(el){
-      el.classList.remove("active");
-      if (parseInt(el.dataset.epIndex, 10) === currentEpisodeIndex) el.classList.add("active");
-    });
+  function buildShareUrl() {
+    var sNum = CONTENT.seasons[state.seasonIndex].number;
+    var eNum = CONTENT.seasons[state.seasonIndex].episodes[state.episodeIndex].number;
+    return window.location.origin + window.location.pathname + "#t" + sNum + "e" + eNum;
   }
-
-  video.addEventListener("ended", function () {
-    if (currentEpisodeIndex < CONTENT.episodes.length - 1) {
-      showToast("Pr?ximo epis?dio em 3 segundos...", 2500);
-      setTimeout(function () { loadEpisode(currentEpisodeIndex + 1, true); }, 3000);
-    } else {
-      showToast("Fim da s?rie!", 3000);
+  function updateSharePreview() {
+    var s = CONTENT.seasons[state.seasonIndex];
+    var e = s.episodes[state.episodeIndex];
+    if (!s || !e) return;
+    sharePreview.innerHTML = "Temporada " + s.number + " · " + e.label + "<br><code>" + buildShareUrl() + "</code>";
+  }
+  btnShare.addEventListener("click", function (e) { e.stopPropagation(); updateSharePreview(); openMenu(shareMenu); });
+  async function doShare() {
+    var url = buildShareUrl();
+    var s = CONTENT.seasons[state.seasonIndex];
+    var e = s.episodes[state.episodeIndex];
+    var title = ($("titleEl").textContent || "Vídeo") + " — " + s.label + " " + e.label;
+    if (navigator.share) {
+      try { await navigator.share({ title: title, text: "Assista: " + title, url: url }); showToast("Compartilhado!"); return; }
+      catch (err) { if (err.name === "AbortError") return; }
     }
-    syncPlayIcons();
-    showControls();
-  });
-
-  function bootstrap() {
-    buildEpisodeList();
-    loadTMDB();
-    loadVideoUrl(CONTENT.episodes[0].url, false);
+    copyToClipboard(url);
   }
-
-  async function loadTMDB() {
-    var isTV = CONTENT.type === "tv";
-    var base = isTV ? "tv" : "movie";
-    var headers = { Authorization: "Bearer " + TMDB_TOKEN, accept: "application/json" };
+  async function copyToClipboard(txt) {
     try {
-      var res = await fetch("https://api.themoviedb.org/3/" + base + "/" + CONTENT.tmdbId + "?language=" + CONTENT.tmdbLang, { headers: headers });
-      if (!res.ok) throw new Error("TMDB " + res.status);
-      var d = await res.json();
-      var title = isTV ? (d.name || d.original_name) : (d.title || d.original_title);
-      $("titleEl").textContent = title || "Sem t?tulo";
-      $("overviewEl").textContent = d.overview || "Sem sinopse dispon?vel.";
-      if (d.poster_path) {
-        var posterUrl = "https://image.tmdb.org/t/p/w500" + d.poster_path;
-        $("posterImg").src = posterUrl;
-        if (d.backdrop_path) video.poster = "https://image.tmdb.org/t/p/original" + d.backdrop_path;
-        else video.poster = posterUrl;
-      }
-      if (typeof d.vote_average === "number" && d.vote_average > 0) {
-        var bR = $("badgeRating"); bR.textContent = "? " + d.vote_average.toFixed(1); bR.style.display = "";
-      }
-      var dateStr = isTV ? d.first_air_date : d.release_date;
-      if (dateStr) { var bY = $("badgeYear"); bY.textContent = dateStr.slice(0, 4); bY.style.display = ""; }
-      if (d.genres && d.genres.length) $("genresEl").textContent = d.genres.map(function(g){return g.name;}).join(", ");
-      try {
-        var endpoint = isTV ? "https://api.themoviedb.org/3/tv/" + CONTENT.tmdbId + "/content_ratings" : "https://api.themoviedb.org/3/movie/" + CONTENT.tmdbId + "/release_dates";
-        var res2 = await fetch(endpoint, { headers: headers });
-        var d2 = await res2.json();
-        var cert = "";
-        if (isTV) { var r = (d2.results || []).find(function(x){ return x.iso_3166_1 === "BR"; }); cert = r ? r.rating : ""; }
-        else { var br = (d2.results || []).find(function(x){ return x.iso_3166_1 === "BR"; }); if (br && br.release_dates && br.release_dates.length) cert = br.release_dates[0].certification; }
-        if (cert) { var bA = $("badgeAge"); bA.textContent = cert; bA.style.display = ""; }
-      } catch(e) {}
-      document.title = title || "Player";
-    } catch (err) { console.warn("TMDB:", err); $("titleEl").textContent = "Erro ao carregar informa??es"; }
+      if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(txt); showToast("Link copiado!"); }
+      else { var ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); showToast("Link copiado!"); }
+    } catch (e) { showToast("Não foi possível copiar"); }
   }
+  $("shareNative").addEventListener("click", function(e){ e.stopPropagation(); doShare(); });
+  $("shareCopy").addEventListener("click", function(e){ e.stopPropagation(); copyToClipboard(buildShareUrl()); });
+  $("shareWhatsapp").addEventListener("click", function(e){ e.stopPropagation(); window.open("https://wa.me/?text=" + encodeURIComponent(($("titleEl").textContent||"") + " - " + buildShareUrl()), "_blank"); });
+  $("shareTelegram").addEventListener("click", function(e){ e.stopPropagation(); window.open("https://t.me/share/url?url=" + encodeURIComponent(buildShareUrl()) + "&text=" + encodeURIComponent($("titleEl").textContent||""), "_blank"); });
 
-  var userInteracted = false;
-  tapToPlay.addEventListener("click", function () {
-    userInteracted = true; tapToPlay.classList.remove("show");
-    video.muted = false; video.play().catch(function(){});
+  // ============ ESCALA ============
+  function applyScale(mode) {
+    video.style.transform = "";
+    video.style.objectFit = "contain";
+    switch (mode) {
+      case "contain": video.style.objectFit = "contain"; break;
+      case "cover":   video.style.objectFit = "cover";   break;
+      case "fill":    video.style.objectFit = "fill";    break;
+      case "zoom110": video.style.transform = "scale(1.10)"; break;
+      case "zoom125": video.style.transform = "scale(1.25)"; break;
+      case "zoom150": video.style.transform = "scale(1.50)"; break;
+    }
+    scaleMenu.querySelectorAll(".item").forEach(function(el){ el.classList.toggle("active", el.dataset.scale === mode); });
+    var labelMap = { contain: "Ajustar", cover: "Preencher", fill: "Esticar", zoom110: "Zoom 110%", zoom125: "Zoom 125%", zoom150: "Zoom 150%" };
+    var item = $("openScaleMenu");
+    if (item) item.querySelector(".val").textContent = labelMap[mode] || "Ajustar";
+  }
+  scaleMenu.addEventListener("click", function (e) {
+    e.stopPropagation();
+    var item = e.target.closest(".item");
+    if (!item || !item.dataset.scale) return;
+    applyScale(item.dataset.scale);
+    closeAllMenus();
   });
-  video.addEventListener("loadedmetadata", function () {
-    var p = video.play();
-    if (p && p.catch) p.catch(function () { if (!userInteracted) tapToPlay.classList.add("show"); });
-  });
+  $("openScaleMenu").addEventListener("click", function (e) { e.stopPropagation(); openMenu(scaleMenu); });
 
-  function togglePlay() { if (video.paused) video.play().catch(function(){}); else video.pause(); }
-  function syncPlayIcons() {
-    if (video.paused) { iconPlayWrap.classList.remove("hidden"); iconPauseWrap.classList.add("hidden"); }
-    else { iconPlayWrap.classList.add("hidden"); iconPauseWrap.classList.remove("hidden"); }
-  }
-  btnPlay.addEventListener("click", function (e) { e.stopPropagation(); togglePlay(); });
-  video.addEventListener("play", syncPlayIcons);
-  video.addEventListener("pause", syncPlayIcons);
-  syncPlayIcons();
-
-  video.addEventListener("pause", function () {
-    if (!userInteracted) return;
-    if (tapToPlay.classList.contains("show")) return;
-    overlay.classList.add("show");
-  });
-  video.addEventListener("play", function () { overlay.classList.remove("show"); });
-  overlay.addEventListener("click", function () { overlay.classList.remove("show"); video.play().catch(function(){}); });
-
-  function updateVolUI() {
-    if (video.muted || video.volume === 0) { iconVolWrap.classList.add("hidden"); iconMutedWrap.classList.remove("hidden"); }
-    else { iconVolWrap.classList.remove("hidden"); iconMutedWrap.classList.add("hidden"); }
-    volSlider.value = video.muted ? 0 : video.volume;
-  }
-  btnMute.addEventListener("click", function (e) { e.stopPropagation(); video.muted = !video.muted; if (!video.muted && video.volume === 0) video.volume = 0.5; updateVolUI(); });
-  volSlider.addEventListener("input", function (e) { e.stopPropagation(); video.volume = parseFloat(this.value); video.muted = video.volume === 0; updateVolUI(); });
-  video.addEventListener("volumechange", updateVolUI);
-  updateVolUI();
-
-  function showSeekFeedback(txt) {
-    seekFb.textContent = txt; seekFb.classList.add("show");
-    clearTimeout(seekFb._t);
-    seekFb._t = setTimeout(function () { seekFb.classList.remove("show"); }, 500);
-  }
-  btnBack.addEventListener("click", function (e) { e.stopPropagation(); video.currentTime = Math.max(0, video.currentTime - 10); showSeekFeedback("-10s"); });
-  btnFwd.addEventListener("click", function (e) { e.stopPropagation(); video.currentTime = Math.min(video.duration || 1e9, video.currentTime + 10); showSeekFeedback("+10s"); });
-
-  function fmt(s) {
-    if (!isFinite(s) || s < 0) s = 0;
-    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
-    if (h > 0) return h + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
-    return m + ":" + String(sec).padStart(2, "0");
-  }
-  function updateProgress() {
-    var d = video.duration || 0, c = video.currentTime || 0;
-    var pct = d ? (c / d) * 100 : 0;
-    progressFill.style.width = pct + "%";
-    progressHand.style.left = pct + "%";
-    timeLabel.textContent = fmt(c) + " / " + fmt(d);
-  }
-  video.addEventListener("timeupdate", updateProgress);
-  video.addEventListener("loadedmetadata", updateProgress);
-  video.addEventListener("durationchange", updateProgress);
-  video.addEventListener("progress", function () {
-    try { if (video.buffered.length) { var end = video.buffered.end(video.buffered.length - 1); var d = video.duration || 1; progressBuf.style.width = (end / d) * 100 + "%"; } } catch (e) {}
-  });
-
-  var seeking = false;
-  function seekFromEvent(ev) {
-    var rect = progressWrap.getBoundingClientRect();
-    var x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left;
-    var pct = Math.max(0, Math.min(1, x / rect.width));
-    if (video.duration) video.currentTime = pct * video.duration;
-  }
-  progressWrap.addEventListener("mousedown", function (e) { seeking = true; seekFromEvent(e); });
-  progressWrap.addEventListener("touchstart", function (e) { seeking = true; seekFromEvent(e); }, { passive: true });
-  document.addEventListener("mousemove", function (e) { if (seeking) seekFromEvent(e); });
-  document.addEventListener("touchmove", function (e) { if (seeking) seekFromEvent(e); }, { passive: true });
-  document.addEventListener("mouseup", function () { seeking = false; });
-  document.addEventListener("touchend", function () { seeking = false; });
-
-  async function enterFullscreen() {
-    var el = player;
-    try {
-      if (el.requestFullscreen) await el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
-    } catch (e) {}
-    try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape"); } catch(e){}
-  }
-  async function exitFullscreen() {
-    try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e){}
-    try { if (document.exitFullscreen) await document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch (e) {}
-  }
-  function toggleFullscreen() {
-    var isFs = document.fullscreenElement || document.webkitFullscreenElement;
-    if (!isFs) enterFullscreen(); else exitFullscreen();
-  }
-  btnFs.addEventListener("click", function (e) { e.stopPropagation(); toggleFullscreen(); });
-  function syncFsIcons() {
-    var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-    if (isFs) { iconFsOnWrap.classList.add("hidden"); iconFsOffWrap.classList.remove("hidden"); }
-    else { iconFsOnWrap.classList.remove("hidden"); iconFsOffWrap.classList.add("hidden"); }
-  }
-  document.addEventListener("fullscreenchange", syncFsIcons);
-  document.addEventListener("webkitfullscreenchange", syncFsIcons);
-
-  if (document.pictureInPictureEnabled) {
-    btnPiP.addEventListener("click", function (e) { e.stopPropagation(); if (document.pictureInPictureElement) document.exitPictureInPicture(); else video.requestPictureInPicture().catch(function(){}); });
-  } else btnPiP.style.display = "none";
-
+  // ============ LEGENDAS ============
   var subtitleTracks = [], uploadedVttUrl = null;
   function addSubtitleTrack(lang, label, url) {
     var t = document.createElement("track");
@@ -529,20 +650,6 @@
       subsList.appendChild(d);
     });
   }
-  if (CONTENT.subtitles.pt) addSubtitleTrack("pt", "Portugu?s", CONTENT.subtitles.pt);
-  if (CONTENT.subtitles.en) addSubtitleTrack("en", "English", CONTENT.subtitles.en);
-  buildSubsList();
-
-  function autoEnableSubtitles() {
-    if (!subtitleTracks.length) return;
-    for (var i = 0; i < video.textTracks.length; i++) video.textTracks[i].mode = "disabled";
-    try {
-      subtitleTracks[0].trackEl.track.mode = "showing";
-      subsMenu.querySelectorAll(".item").forEach(function(el){ el.classList.remove("active"); });
-      var activeItem = subsList.querySelector('[data-track-index="0"]');
-      if (activeItem) activeItem.classList.add("active");
-    } catch(e) {}
-  }
   function selectSubtitle(mode) {
     for (var i = 0; i < video.textTracks.length; i++) video.textTracks[i].mode = "disabled";
     if (mode === "off") { showToast("Legendas desativadas"); return; }
@@ -555,6 +662,8 @@
     var item = e.target.closest(".item");
     if (!item) return;
     if (item.id === "uploadSub") { $("subFile").click(); return; }
+    if (item.id === "aiGenPt") { generateSubtitlesWithAI("pt"); return; }
+    if (item.id === "aiGenEn") { generateSubtitlesWithAI("en"); return; }
     subsMenu.querySelectorAll(".item").forEach(function(el){ el.classList.remove("active"); });
     item.classList.add("active");
     if (item.dataset.sub === "off") selectSubtitle("off");
@@ -571,8 +680,56 @@
     st.trackEl.track.mode = "showing";
     showToast("Legenda carregada: " + f.name);
   });
-  video.addEventListener("play", function () { setTimeout(autoEnableSubtitles, 300); });
 
+  // ============ IA ============
+  async function generateSubtitlesWithAI(lang) {
+    showToast("🤖 Gerando legenda " + lang.toUpperCase() + "...", 4000);
+    closeAllMenus();
+    if (!AI_CONFIG.endpoint || !AI_CONFIG.apiKey) {
+      console.warn("%c⚠ IA não configurada", "color:#f39c12;font-weight:bold",
+        "\nPreencha AI_CONFIG.endpoint e AI_CONFIG.apiKey.");
+      showToast("⚠ IA não configurada. Veja o console.", 5000);
+      return;
+    }
+    try {
+      var audioBlob = await captureAudioBlob(video, 15);
+      var form = new FormData();
+      form.append("file", audioBlob, "audio.webm");
+      form.append("model", AI_CONFIG.model || "whisper-1");
+      form.append("language", lang === "pt" ? "pt" : "en");
+      form.append("response_format", "vtt");
+      var res = await fetch(AI_CONFIG.endpoint, { method: "POST", headers: { Authorization: "Bearer " + AI_CONFIG.apiKey }, body: form });
+      if (!res.ok) throw new Error("API " + res.status);
+      var vttText = await res.text();
+      var blob = new Blob([vttText], { type: "text/vtt" });
+      var url = URL.createObjectURL(blob);
+      var st = addSubtitleTrack(lang, (lang === "pt" ? "Português" : "English") + " (IA)", url);
+      buildSubsList();
+      st.trackEl.track.mode = "showing";
+      showToast("✅ Legenda " + lang.toUpperCase() + " gerada!");
+    } catch (err) {
+      console.error("Erro IA:", err);
+      showToast("❌ Falha ao gerar legenda.");
+    }
+  }
+  function captureAudioBlob(videoEl, seconds) {
+    return new Promise(function (resolve, reject) {
+      try {
+        var stream = videoEl.captureStream ? videoEl.captureStream() : videoEl.mozCaptureStream();
+        var audioTracks = stream.getAudioTracks();
+        if (!audioTracks.length) return reject(new Error("Sem áudio"));
+        var audioStream = new MediaStream(audioTracks);
+        var chunks = [];
+        var mr = new MediaRecorder(audioStream, { mimeType: "audio/webm" });
+        mr.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+        mr.onstop = function () { resolve(new Blob(chunks, { type: "audio/webm" })); };
+        mr.start();
+        setTimeout(function () { try { mr.stop(); } catch(e){} }, seconds * 1000);
+      } catch (err) { reject(err); }
+    });
+  }
+
+  // ============ QUALIDADE ============
   function labelForHeight(h) {
     if (!h) return "";
     if (h >= 2000) return "4K (2160p)"; if (h >= 1400) return "2K (1440p)";
@@ -619,6 +776,7 @@
   btnQuality.addEventListener("click", function (e) { e.stopPropagation(); buildQualityMenu(); openMenu(qualityMenu); });
   video.addEventListener("loadedmetadata", function () { setTimeout(buildQualityMenu, 50); });
 
+  // ============ SETTINGS ============
   btnSettings.addEventListener("click", function (e) { e.stopPropagation(); openMenu(settingsMenu); });
   settingsMenu.addEventListener("click", function (e) {
     e.stopPropagation();
@@ -629,17 +787,21 @@
       settingsMenu.querySelectorAll("[data-speed]").forEach(function(el){ el.classList.remove("active"); });
       item.classList.add("active"); showToast("Velocidade: " + sp + "x");
     }
-    if (item.id === "setLoop") { video.loop = !video.loop; item.querySelector(".val").textContent = video.loop ? "Sim" : "N?o"; showToast(video.loop ? "Repetir: ON" : "Repetir: OFF"); }
+    if (item.id === "setLoop") { video.loop = !video.loop; item.querySelector(".val").textContent = video.loop ? "Sim" : "Não"; showToast(video.loop ? "Repetir: ON" : "Repetir: OFF"); }
   });
 
+  // ============ EPISÓDIOS ============
   btnEpisodes.addEventListener("click", function (e) { e.stopPropagation(); buildEpisodeList(); openMenu(episodesMenu); });
 
+  // Fechar menus
   document.addEventListener("click", function (e) {
     if (e.target.closest(".menu")) return;
-    if (e.target.closest("#btnSettings") || e.target.closest("#btnQuality") || e.target.closest("#btnCC") || e.target.closest("#btnEpisodes")) return;
+    if (e.target.closest("#btnSettings") || e.target.closest("#btnQuality") || e.target.closest("#btnCC") ||
+        e.target.closest("#btnEpisodes") || e.target.closest("#btnShare") || e.target.closest("#openScaleMenu")) return;
     closeAllMenus();
   });
 
+  // ============ MOSTRAR/ESCONDER ============
   var hideTimer = null;
   function showControls() {
     controls.classList.add("visible");
@@ -653,27 +815,81 @@
     if (e.target === video || e.target === player) togglePlay();
   });
   video.addEventListener("pause", function () { showControls(); });
-  video.addEventListener("play", function () { showControls(); });
+  video.addEventListener("play",  function () { showControls(); });
 
+  // ============ BLOQUEIO LONG-PRESS ============
   video.addEventListener("contextmenu", function (e) { e.preventDefault(); });
-  video.addEventListener("dragstart", function (e) { e.preventDefault(); });
+  video.addEventListener("dragstart",   function (e) { e.preventDefault(); });
   var longPressTimer = null;
   video.addEventListener("touchstart", function (e) { longPressTimer = setTimeout(function () { if (e.cancelable) e.preventDefault(); }, 350); }, { passive: false });
-  video.addEventListener("touchend", function () { clearTimeout(longPressTimer); });
-  video.addEventListener("touchmove", function () { clearTimeout(longPressTimer); });
+  video.addEventListener("touchend",    function () { clearTimeout(longPressTimer); });
+  video.addEventListener("touchmove",   function () { clearTimeout(longPressTimer); });
   video.addEventListener("touchcancel", function () { clearTimeout(longPressTimer); });
 
-  document.addEventListener("keydown", function (e) {
-    if (e.target && e.target.tagName === "INPUT") return;
-    switch (e.key) {
-      case " ": case "k": e.preventDefault(); togglePlay(); break;
-      case "ArrowLeft": video.currentTime -= 10; showSeekFeedback("-10s"); break;
-      case "ArrowRight": video.currentTime += 10; showSeekFeedback("+10s"); break;
-      case "f": toggleFullscreen(); break;
-      case "m": video.muted = !video.muted; updateVolUI(); break;
-      case "c": btnCC.click(); break;
-    }
+  // ============ PLAY / PAUSE / VOLUME / SEEK ============
+  var userInteracted = false;
+  tapToPlay.addEventListener("click", function () {
+    userInteracted = true; tapToPlay.classList.remove("show");
+    video.muted = false; video.play().catch(function(){});
   });
+  video.addEventListener("loadedmetadata", function () {
+    var p = video.play();
+    if (p && p.catch) p.catch(function () { if (!userInteracted) tapToPlay.classList.add("show"); });
+  });
+  function togglePlay() { if (video.paused) video.play().catch(function(){}); else video.pause(); }
+  function syncPlayIcons() {
+    if (video.paused) { iconPlayWrap.classList.remove("hidden"); iconPauseWrap.classList.add("hidden"); }
+    else { iconPlayWrap.classList.add("hidden"); iconPauseWrap.classList.remove("hidden"); }
+  }
+  btnPlay.addEventListener("click", function (e) { e.stopPropagation(); togglePlay(); });
+  video.addEventListener("play", syncPlayIcons);
+  video.addEventListener("pause", syncPlayIcons);
+  syncPlayIcons();
+  video.addEventListener("pause", function () { if (!userInteracted) return; if (tapToPlay.classList.contains("show")) return; overlay.classList.add("show"); });
+  video.addEventListener("play", function () { overlay.classList.remove("show"); });
+  overlay.addEventListener("click", function () { overlay.classList.remove("show"); video.play().catch(function(){}); });
+  function updateVolUI() {
+    if (video.muted || video.volume === 0) { iconVolWrap.classList.add("hidden"); iconMutedWrap.classList.remove("hidden"); }
+    else { iconVolWrap.classList.remove("hidden"); iconMutedWrap.classList.add("hidden"); }
+    volSlider.value = video.muted ? 0 : video.volume;
+  }
+  btnMute.addEventListener("click", function (e) { e.stopPropagation(); video.muted = !video.muted; if (!video.muted && video.volume === 0) video.volume = 0.5; updateVolUI(); });
+  volSlider.addEventListener("input", function (e) { e.stopPropagation(); video.volume = parseFloat(this.value); video.muted = video.volume === 0; updateVolUI(); });
+  video.addEventListener("volumechange", updateVolUI);
+  updateVolUI();
+  function showSeekFeedback(txt) { seekFb.textContent = txt; seekFb.classList.add("show"); clearTimeout(seekFb._t); seekFb._t = setTimeout(function () { seekFb.classList.remove("show"); }, 500); }
+  btnBack.addEventListener("click", function (e) { e.stopPropagation(); video.currentTime = Math.max(0, video.currentTime - 10); showSeekFeedback("-10s"); });
+  btnFwd.addEventListener("click", function (e) { e.stopPropagation(); video.currentTime = Math.min(video.duration || 1e9, video.currentTime + 10); showSeekFeedback("+10s"); });
+  function fmt(s) { if (!isFinite(s) || s < 0) s = 0; var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60); if (h > 0) return h + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0"); return m + ":" + String(sec).padStart(2, "0"); }
+  function updateProgress() { var d = video.duration || 0, c = video.currentTime || 0; var pct = d ? (c / d) * 100 : 0; progressFill.style.width = pct + "%"; progressHand.style.left = pct + "%"; timeLabel.textContent = fmt(c) + " / " + fmt(d); }
+  video.addEventListener("timeupdate", updateProgress); video.addEventListener("loadedmetadata", updateProgress); video.addEventListener("durationchange", updateProgress);
+  video.addEventListener("progress", function () { try { if (video.buffered.length) { var end = video.buffered.end(video.buffered.length - 1); var d = video.duration || 1; progressBuf.style.width = (end / d) * 100 + "%"; } } catch (e) {} });
+  var seeking = false;
+  function seekFromEvent(ev) { var rect = progressWrap.getBoundingClientRect(); var x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left; var pct = Math.max(0, Math.min(1, x / rect.width)); if (video.duration) video.currentTime = pct * video.duration; }
+  progressWrap.addEventListener("mousedown", function (e) { seeking = true; seekFromEvent(e); });
+  progressWrap.addEventListener("touchstart", function (e) { seeking = true; seekFromEvent(e); }, { passive: true });
+  document.addEventListener("mousemove", function (e) { if (seeking) seekFromEvent(e); });
+  document.addEventListener("touchmove", function (e) { if (seeking) seekFromEvent(e); }, { passive: true });
+  document.addEventListener("mouseup", function () { seeking = false; });
+  document.addEventListener("touchend", function () { seeking = false; });
+  async function enterFullscreen() { var el = player; try { if (el.requestFullscreen) await el.requestFullscreen(); else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen(); else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen(); } catch (e) {} try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape"); } catch(e){} }
+  async function exitFullscreen() { try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e){} try { if (document.exitFullscreen) await document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch (e) {} }
+  function toggleFullscreen() { var isFs = document.fullscreenElement || document.webkitFullscreenElement; if (!isFs) enterFullscreen(); else exitFullscreen(); }
+  btnFs.addEventListener("click", function (e) { e.stopPropagation(); toggleFullscreen(); });
+  function syncFsIcons() { var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement); if (isFs) { iconFsOnWrap.classList.add("hidden"); iconFsOffWrap.classList.remove("hidden"); } else { iconFsOnWrap.classList.remove("hidden"); iconFsOffWrap.classList.add("hidden"); } }
+  document.addEventListener("fullscreenchange", syncFsIcons); document.addEventListener("webkitfullscreenchange", syncFsIcons);
+  if (document.pictureInPictureEnabled) { btnPiP.addEventListener("click", function (e) { e.stopPropagation(); if (document.pictureInPictureElement) document.exitPictureInPicture(); else video.requestPictureInPicture().catch(function(){}); }); } else btnPiP.style.display = "none";
+  async function tryCast() { if (video.remote && typeof video.remote.prompt === "function") { try { await video.remote.prompt(); showToast("Transmitindo para TV..."); return; } catch (e) {} } if (typeof video.webkitShowPlaybackTargetPicker === "function") { try { video.webkitShowPlaybackTargetPicker(); showToast("Escolha um dispositivo AirPlay"); return; } catch (e) {} } if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) { try { await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }); showToast("Escolha a tela/aba"); return; } catch (e) { showToast("Não foi possível iniciar a transmissão"); return; } } showToast("Este navegador não suporta transmissão"); }
+  btnCast.addEventListener("click", function (e) { e.stopPropagation(); tryCast(); });
+  if (video.remote && typeof video.remote.watchAvailability === "function") { video.remote.watchAvailability(function (available) { btnCast.classList.toggle("casting", !!available); }).catch(function(){}); }
+
+  // ============ HASH ============
+  window.addEventListener("hashchange", function () { var h = readUrlHash(); if (h) loadEpisode(h.seasonIndex, h.episodeIndex, true); });
+
+  // ============ BOOTSTRAP ============
+  function bootstrap() {
+    loadSeries(); // Carrega da API Xtream
+  }
 
   renderIcons();
   window.addEventListener("load", renderIcons);
